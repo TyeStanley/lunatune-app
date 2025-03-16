@@ -1,0 +1,15 @@
+{
+  "name": "music-player-app",
+  "version": "1.0.0",
+  "description": "Full-stack music player application",
+  "scripts": {
+    "server": "cd server/MusicPlayer.API && dotnet run",
+    "server:watch": "cd server/MusicPlayer.API && dotnet watch run",
+    "client": "cd client && npm run dev",
+    "install:client": "cd client && npm install",
+    "build": "concurrently \"cd server && dotnet build\" \"cd client && npm run build\"",
+    "clean:server": "cd server && dotnet clean",
+    "clean:client": "cd client && npm run clean",
+    "swagger": "start http://localhost:5133/swagger"
+  }
+}
