@@ -1,0 +1,13 @@
+## .NET Core
+bin/
+obj/
+
+## Local development settings
+appsettings.Development.json
+*.Development.json
+
+## macOS
+.DS_Store
+
+## Windows
+Thumbs.db 
