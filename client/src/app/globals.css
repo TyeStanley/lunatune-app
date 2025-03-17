@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --background: #ffffff;
@@ -10,6 +10,13 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+}
+
+/* Theme colors */
+@theme {
+  --color-background-light: #25262b; /* dark gray */
+  --color-background-lighter: #2c2e33; /* lighter dark gray */
+  --color-primary: #fbbf24; /* vibrant gold */
 }
 
 @media (prefers-color-scheme: dark) {
