@@ -14,7 +14,8 @@
 
 /* Theme colors */
 @theme {
-  --color-background-light: #25262b; /* dark gray */
+  --color-background: #121212; /* dark gray */
+  --color-background-light: #25262b; /* light gray */
   --color-background-lighter: #2c2e33; /* lighter dark gray */
   --color-primary: #fbbf24; /* vibrant gold */
 }
