@@ -2,7 +2,7 @@ namespace MusicPlayer.Core.Models;
 
 public class Song
 {
-  public int Id { get; set; }
+  public Guid Id { get; set; }
   public required string Title { get; set; }
   public required string Artist { get; set; }
   public string? Album { get; set; }
@@ -15,5 +15,6 @@ public class Song
 
   // Basic user interaction
   public bool IsFavorite { get; set; }
-  public DateTime DateAdded { get; set; } = DateTime.UtcNow;
+  public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+  public DateTime? UpdatedAt { get; set; }
 }
