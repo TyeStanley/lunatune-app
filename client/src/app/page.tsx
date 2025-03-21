@@ -1,6 +1,29 @@
 import TrackItem from '@/components/TrackItem';
 
-export default function Home() {
+async function getSongs(): Promise<Song[]> {
+  const res = await fetch('http://localhost:5133/api/songs', {
+    cache: 'no-store',
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch songs');
+  }
+
+  return res.json();
+}
+
+interface Song {
+  id: string;
+  title: string;
+  artist: string;
+  album: string;
+  duration: string;
+  createdAt: string;
+}
+
+export default async function Home() {
+  const songs = await getSongs();
+
   return (
     <main className="bg-background min-h-screen">
       <div className="mx-auto max-w-4xl px-4 py-8">
@@ -16,27 +39,16 @@ export default function Home() {
         {/* Music List */}
         <div className="bg-background-light rounded-lg shadow-lg">
           <div>
-            <TrackItem
-              title="Lay Low"
-              artist="Tiësto"
-              album="Lay Low"
-              dateAdded="2 days ago"
-              duration="2:33"
-            />
-            <TrackItem
-              title="Hotel California"
-              artist="Eagles"
-              album="Something"
-              dateAdded="5 days ago"
-              duration="6:30"
-            />
-            <TrackItem
-              title="Sweet Caroline"
-              artist="Neil Diamond"
-              album="Something"
-              dateAdded="1 week ago"
-              duration="3:23"
-            />
+            {songs.map((song: Song) => (
+              <TrackItem
+                key={song.id}
+                title={song.title}
+                artist={song.artist}
+                album={song.album}
+                dateAdded={new Date(song.createdAt).toLocaleDateString()}
+                duration={song.duration.substring(11, 4)}
+              />
+            ))}
           </div>
         </div>
       </div>
