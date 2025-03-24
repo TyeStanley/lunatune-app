@@ -14,12 +14,14 @@
     "copy-installer": "cp -R src-tauri/target/release/bundle/nsis/. public/installer && cd public/installer && mv music-player_*_x64-setup.exe music-player.exe"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.6.1",
     "@tauri-apps/api": "^1.6.0",
     "@tauri-apps/cli": "^1.6.3",
     "lucide-react": "^0.482.0",
     "next": "15.2.2",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-redux": "^9.2.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
