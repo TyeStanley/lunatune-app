@@ -5,16 +5,32 @@ interface Song {
   title: string;
   artist: string;
   url: string;
+  duration: number;
 }
 
 interface NowPlayingState {
   currentSong: Song | null;
   isPlaying: boolean;
+  progress: number;
+  volume: number;
+  isShuffled: boolean;
+  isRepeating: boolean;
 }
 
 const initialState: NowPlayingState = {
-  currentSong: null,
+  currentSong: {
+    // TODO: Set initial state to null when I have state for current song
+    id: '1',
+    title: 'Lose Control',
+    artist: 'Teddy Swims',
+    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    duration: 210,
+  },
   isPlaying: false,
+  progress: 0,
+  volume: 100,
+  isShuffled: false,
+  isRepeating: false,
 };
 
 export const nowPlayingSlice = createSlice({
@@ -24,15 +40,40 @@ export const nowPlayingSlice = createSlice({
     playSong: (state, action: PayloadAction<Song>) => {
       state.currentSong = action.payload;
       state.isPlaying = true;
+      state.progress = 0;
     },
     pauseSong: (state) => {
       state.isPlaying = false;
     },
     resumeSong: (state) => {
-      state.isPlaying = true;
+      if (state.currentSong && state.progress < state.currentSong.duration) {
+        state.isPlaying = true;
+      }
+    },
+    setProgress: (state, action: PayloadAction<number>) => {
+      if (state.currentSong) {
+        state.progress = Math.max(0, Math.min(action.payload, state.currentSong.duration));
+      }
+    },
+    setVolume: (state, action: PayloadAction<number>) => {
+      state.volume = Math.max(0, Math.min(action.payload, 100));
+    },
+    toggleShuffle: (state) => {
+      state.isShuffled = !state.isShuffled;
+    },
+    toggleRepeat: (state) => {
+      state.isRepeating = !state.isRepeating;
     },
   },
 });
 
-export const { playSong, pauseSong, resumeSong } = nowPlayingSlice.actions;
+export const {
+  playSong,
+  pauseSong,
+  resumeSong,
+  setProgress,
+  setVolume,
+  toggleShuffle,
+  toggleRepeat,
+} = nowPlayingSlice.actions;
 export default nowPlayingSlice.reducer;
