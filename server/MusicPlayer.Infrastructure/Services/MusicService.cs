@@ -13,4 +13,9 @@ public class MusicService(ApplicationDbContext context) : IMusicService
   {
     return await _context.Songs.ToListAsync();
   }
+
+  public async Task<Song?> GetSongByIdAsync(Guid id)
+  {
+    return await _context.Songs.FindAsync(id);
+  }
 }
