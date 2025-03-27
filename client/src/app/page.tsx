@@ -1,28 +1,8 @@
+import { musicService } from '@/services/musicService';
 import TrackItem from '@/components/TrackItem';
 
-async function getSongs(): Promise<Song[]> {
-  const res = await fetch('http://localhost:5133/api/songs', {
-    cache: 'no-store',
-  });
-
-  if (!res.ok) {
-    throw new Error('Failed to fetch songs');
-  }
-
-  return res.json();
-}
-
-interface Song {
-  id: string;
-  title: string;
-  artist: string;
-  album: string;
-  duration: string;
-  createdAt: string;
-}
-
 export default async function Home() {
-  const songs = await getSongs();
+  const songs = await musicService.getSongs();
 
   return (
     <main className="bg-background min-h-screen">
@@ -39,14 +19,16 @@ export default async function Home() {
         {/* Music List */}
         <div className="bg-background-light rounded-lg shadow-lg">
           <div>
-            {songs.map((song: Song) => (
+            {songs.map((song, index) => (
               <TrackItem
                 key={song.id}
+                index={index}
+                id={song.id}
                 title={song.title}
                 artist={song.artist}
-                album={song.album}
-                dateAdded={new Date(song.createdAt).toLocaleDateString()}
-                duration={song.duration.substring(11, 4)}
+                album={song.album || ''}
+                dateAdded={song.createdAt}
+                duration={song.duration}
               />
             ))}
           </div>

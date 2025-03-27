@@ -4,61 +4,29 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import {
   pauseSong,
   resumeSong,
-  setProgress,
   toggleShuffle,
   toggleRepeat,
 } from '@/lib/features/nowPlaying/nowPlayingSlice';
 import { Play, Pause, SkipForward, SkipBack, Repeat, Shuffle } from 'lucide-react';
-import { useEffect, useRef } from 'react';
 import Slider from './ui/Slider';
 import { formatTime } from '@/utils/time';
 
-export default function PlayerControls() {
+export default function PlayerControls({
+  audioRef,
+}: {
+  audioRef: React.RefObject<HTMLAudioElement | null>;
+}) {
   const dispatch = useAppDispatch();
   const { currentSong, isPlaying, progress, isShuffled, isRepeating } = useAppSelector(
     (state) => state.nowPlaying,
   );
-  const progressRef = useRef(progress);
 
-  useEffect(() => {
-    progressRef.current = progress;
-  }, [progress]);
-
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-
-    if (isPlaying && currentSong) {
-      intervalId = setInterval(() => {
-        if (progressRef.current < currentSong.duration) {
-          dispatch(setProgress(progressRef.current + 1));
-        } else {
-          dispatch(pauseSong());
-        }
-      }, 1000);
-    }
-
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-    };
-  }, [isPlaying, currentSong, dispatch]);
-
-  const handlePlayPause = () => {
-    if (isPlaying) {
-      dispatch(pauseSong());
-    } else {
-      dispatch(resumeSong());
+  // Handle song progress bar change
+  const handleProgressChange = (value: number) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = value;
     }
   };
-
-  const handleShuffleClick = () => {
-    dispatch(toggleShuffle());
-  };
-
-  const handleRepeatClick = () => {
-    dispatch(toggleRepeat());
-  };
-
-  if (!currentSong) return null;
 
   const controlButtonClass = (isActive: boolean) =>
     `cursor-pointer transition-colors ${
@@ -68,15 +36,24 @@ export default function PlayerControls() {
   return (
     <div className="flex w-full flex-col items-center gap-2">
       <div className="flex items-center gap-6">
-        <button onClick={handleShuffleClick} className={controlButtonClass(isShuffled)}>
+        <button
+          className={controlButtonClass(isShuffled)}
+          onClick={() => dispatch(toggleShuffle())}
+        >
           <Shuffle className="h-5 w-5" />
         </button>
         <button className={controlButtonClass(false)}>
           <SkipBack className="h-5 w-5" />
         </button>
         <button
-          onClick={handlePlayPause}
           className="cursor-pointer rounded-full bg-gray-200 p-2 transition hover:scale-105 hover:bg-white"
+          onClick={() => {
+            if (isPlaying) {
+              dispatch(pauseSong());
+            } else {
+              dispatch(resumeSong());
+            }
+          }}
         >
           {isPlaying ? (
             <Pause className="text-background h-5 w-5" />
@@ -87,14 +64,17 @@ export default function PlayerControls() {
         <button className={controlButtonClass(false)}>
           <SkipForward className="h-5 w-5" />
         </button>
-        <button onClick={handleRepeatClick} className={controlButtonClass(isRepeating)}>
+        <button
+          className={controlButtonClass(isRepeating)}
+          onClick={() => dispatch(toggleRepeat())}
+        >
           <Repeat className="h-5 w-5" />
         </button>
       </div>
       <Slider
         value={progress}
-        max={currentSong.duration}
-        onChange={(value) => dispatch(setProgress(value))}
+        max={currentSong?.duration || 0}
+        onChange={handleProgressChange}
         formatLabel={formatTime}
         showLabels
       />

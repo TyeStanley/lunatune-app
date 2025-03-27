@@ -11,7 +11,8 @@ builder.Services.AddCors(options =>
         policy => policy
             .AllowAnyOrigin()
             .AllowAnyMethod()
-            .AllowAnyHeader());
+            .AllowAnyHeader()
+            .WithExposedHeaders("Content-Range", "Accept-Ranges", "Content-Length", "Content-Type"));
 });
 
 builder.Services.AddControllers();

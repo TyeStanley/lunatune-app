@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 
 interface SliderProps {
   value: number;
@@ -8,7 +8,6 @@ interface SliderProps {
   onChange: (value: number) => void;
   formatLabel?: (value: number) => string;
   showLabels?: boolean;
-  className?: string;
 }
 
 export default function Slider({
@@ -17,69 +16,54 @@ export default function Slider({
   onChange,
   formatLabel,
   showLabels = false,
-  className = '',
 }: SliderProps) {
-  const sliderRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
+  const progressBarRef = useRef<HTMLDivElement>(null);
 
-  const handleMove = useCallback(
-    (clientX: number) => {
-      if (!sliderRef.current) return;
+  const updateProgress = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!progressBarRef.current) return;
 
-      const rect = sliderRef.current.getBoundingClientRect();
-      const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
-      const percentage = x / rect.width;
-      const newValue = Math.floor(percentage * max);
+    const progressBar = progressBarRef.current;
+    const rect = progressBar.getBoundingClientRect();
+    const pos = e.clientX - rect.left;
+    const percent = pos / progressBar.offsetWidth;
 
-      if (!isNaN(newValue)) {
-        onChange(Math.max(0, Math.min(newValue, max)));
-      }
-    },
-    [max, onChange],
-  );
+    const boundedPercent = Math.max(0, Math.min(1, percent));
+    const newTime = boundedPercent * max;
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    setIsDragging(true);
-    handleMove(e.clientX);
+    onChange(newTime);
   };
 
-  useEffect(() => {
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    updateProgress(e);
+
     const handleMouseMove = (e: MouseEvent) => {
-      if (isDragging) {
-        handleMove(e.clientX);
-      }
+      e.preventDefault();
+      const mouseEvent = e as unknown as React.MouseEvent<HTMLDivElement>;
+      updateProgress(mouseEvent);
     };
 
     const handleMouseUp = () => {
-      setIsDragging(false);
-    };
-
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-    }
-
-    return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging, handleMove]);
 
-  const percentage = max > 0 ? Math.min((value / max) * 100, 100) : 0;
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
 
   return (
-    <div className={`flex w-full items-center gap-2 ${className}`}>
+    <div className="flex w-full items-center gap-2">
       {showLabels && formatLabel && (
         <span className="min-w-[40px] text-right text-xs text-gray-400">{formatLabel(value)}</span>
       )}
       <div
-        ref={sliderRef}
+        ref={progressBarRef}
         onMouseDown={handleMouseDown}
         className="bg-background-lighter group relative h-1 w-full cursor-pointer rounded-full"
       >
         <div
           className="group-hover:bg-primary absolute top-0 left-0 h-1 rounded-full bg-gray-200 transition-colors"
-          style={{ width: `${percentage}%` }}
+          style={{ width: `${(value / max) * 100}%` }}
         />
       </div>
       {showLabels && formatLabel && (

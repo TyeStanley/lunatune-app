@@ -18,14 +18,7 @@ interface NowPlayingState {
 }
 
 const initialState: NowPlayingState = {
-  currentSong: {
-    // TODO: Set initial state to null when I have state for current song
-    id: '1',
-    title: 'Lose Control',
-    artist: 'Teddy Swims',
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    duration: 210,
-  },
+  currentSong: null,
   isPlaying: false,
   progress: 0,
   volume: 100,
@@ -40,7 +33,6 @@ export const nowPlayingSlice = createSlice({
     playSong: (state, action: PayloadAction<Song>) => {
       state.currentSong = action.payload;
       state.isPlaying = true;
-      state.progress = 0;
     },
     pauseSong: (state) => {
       state.isPlaying = false;
@@ -76,4 +68,5 @@ export const {
   toggleShuffle,
   toggleRepeat,
 } = nowPlayingSlice.actions;
+
 export default nowPlayingSlice.reducer;

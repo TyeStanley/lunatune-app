@@ -39,7 +39,14 @@ public class SongsController(IMusicService musicService, IFileStorageService fil
       return NotFound();
     }
 
-    var stream = await _fileStorageService.GetFileAsync(song.FilePath);
-    return File(stream, "audio/mpeg");
+    try
+    {
+      var audioStream = await _fileStorageService.GetFileAsync(song.FilePath);
+      return File(audioStream, "audio/mpeg", enableRangeProcessing: true);
+    }
+    catch (Exception)
+    {
+      return StatusCode(500, "Error streaming file");
+    }
   }
 }

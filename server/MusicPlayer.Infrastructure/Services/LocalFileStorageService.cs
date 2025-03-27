@@ -17,4 +17,5 @@ public class LocalFileStorageService(IWebHostEnvironment environment) : IFileSto
 
     return await Task.FromResult(new FileStream(fullPath, FileMode.Open, FileAccess.Read));
   }
+
 }

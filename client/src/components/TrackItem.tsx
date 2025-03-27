@@ -1,15 +1,56 @@
-import { Play, Heart, MoreHorizontal } from 'lucide-react';
+'use client';
+
+import { Play, Heart, MoreHorizontal, Pause } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { playSong, pauseSong, resumeSong } from '@/lib/features/nowPlaying/nowPlayingSlice';
+import { musicService } from '@/services/musicService';
+import { formatDuration, parseDuration } from '@/utils/duration';
+import { getRelativeTime } from '@/utils/date';
 
 interface TrackItemProps {
+  index: number;
+  id: string;
   title: string;
   artist: string;
   album: string;
   dateAdded: string;
   duration: string;
-  // We'll add more props later like albumArt, id, etc.
 }
 
-export default function TrackItem({ title, artist, album, dateAdded, duration }: TrackItemProps) {
+export default function TrackItem({
+  index,
+  id,
+  title,
+  artist,
+  album,
+  dateAdded,
+  duration,
+}: TrackItemProps) {
+  const dispatch = useAppDispatch();
+  const { currentSong, isPlaying } = useAppSelector((state) => state.nowPlaying);
+  const isCurrentSong = currentSong?.id === id;
+  const isCurrentlyPlaying = isCurrentSong && isPlaying;
+
+  const handlePlayClick = () => {
+    if (isCurrentSong) {
+      if (isPlaying) {
+        dispatch(pauseSong());
+      } else {
+        dispatch(resumeSong());
+      }
+    } else {
+      dispatch(
+        playSong({
+          id,
+          title,
+          artist,
+          url: musicService.getStreamUrl(id),
+          duration: parseDuration(duration),
+        }),
+      );
+    }
+  };
+
   return (
     <div
       className="group hover:bg-background-lighter focus:from-background-lighter focus:to-primary/30 relative flex items-center rounded-md p-4 transition-all duration-300 ease-in-out focus:bg-gradient-to-l"
@@ -18,13 +59,14 @@ export default function TrackItem({ title, artist, album, dateAdded, duration }:
       {/* Track Number/Play Button Area */}
       <div className="mr-4 flex w-8 items-center justify-center">
         <span className="text-base text-gray-400 group-focus-within:hidden group-hover:hidden">
-          1
+          {index + 1}
         </span>
         <button
           className="hover:text-primary hidden text-gray-200 group-focus-within:block group-hover:block"
-          aria-label="Play"
+          aria-label={isCurrentlyPlaying ? 'Pause' : 'Play'}
+          onClick={handlePlayClick}
         >
-          <Play size={20} />
+          {isCurrentlyPlaying ? <Pause size={20} /> : <Play size={20} />}
         </button>
       </div>
 
@@ -48,7 +90,7 @@ export default function TrackItem({ title, artist, album, dateAdded, duration }:
 
         {/* Date Added */}
         <div className="hidden w-32 text-sm text-gray-400 md:block">
-          <p className="truncate">{dateAdded}</p>
+          <p className="truncate">{getRelativeTime(dateAdded)}</p>
         </div>
 
         {/* Action Buttons and Duration */}
@@ -59,7 +101,7 @@ export default function TrackItem({ title, artist, album, dateAdded, duration }:
           >
             <Heart size={18} />
           </button>
-          <span className="text-sm text-gray-400">{duration}</span>
+          <span className="text-sm text-gray-400">{formatDuration(duration)}</span>
           <button
             className="hover:text-primary invisible text-gray-400 group-focus-within:visible group-hover:visible"
             aria-label="More options"
