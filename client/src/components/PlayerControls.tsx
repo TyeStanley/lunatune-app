@@ -6,26 +6,20 @@ import {
   resumeSong,
   toggleShuffle,
   toggleRepeat,
+  seekToTime,
 } from '@/lib/features/nowPlaying/nowPlayingSlice';
 import { Play, Pause, SkipForward, SkipBack, Repeat, Shuffle } from 'lucide-react';
 import Slider from './ui/Slider';
 import { formatTime } from '@/utils/time';
 
-export default function PlayerControls({
-  audioRef,
-}: {
-  audioRef: React.RefObject<HTMLAudioElement | null>;
-}) {
+export default function PlayerControls() {
   const dispatch = useAppDispatch();
-  const { isPlaying, progress, isShuffled, isRepeating } = useAppSelector(
+  const { isPlaying, progress, isShuffled, isRepeating, maxDuration } = useAppSelector(
     (state) => state.nowPlaying,
   );
 
-  // Handle song progress bar change
   const handleProgressChange = (value: number) => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = value;
-    }
+    dispatch(seekToTime(value));
   };
 
   const controlButtonClass = (isActive: boolean) =>
@@ -73,7 +67,7 @@ export default function PlayerControls({
       </div>
       <Slider
         value={progress}
-        max={audioRef.current?.duration || 0}
+        max={maxDuration}
         onChange={handleProgressChange}
         formatLabel={formatTime}
         showLabels

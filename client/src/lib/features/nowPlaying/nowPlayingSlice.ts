@@ -12,18 +12,22 @@ interface NowPlayingState {
   currentSong: Song | null;
   isPlaying: boolean;
   progress: number;
+  maxDuration: number;
   volume: number;
   isShuffled: boolean;
   isRepeating: boolean;
+  seekTime: number | null;
 }
 
 const initialState: NowPlayingState = {
   currentSong: null,
   isPlaying: false,
   progress: 0,
+  maxDuration: 0,
   volume: 1,
   isShuffled: false,
   isRepeating: false,
+  seekTime: null,
 };
 
 export const nowPlayingSlice = createSlice({
@@ -56,6 +60,15 @@ export const nowPlayingSlice = createSlice({
     toggleRepeat: (state) => {
       state.isRepeating = !state.isRepeating;
     },
+    setMaxDuration: (state, action: PayloadAction<number>) => {
+      state.maxDuration = action.payload;
+    },
+    seekToTime: (state, action: PayloadAction<number>) => {
+      state.seekTime = action.payload;
+    },
+    clearSeekTime: (state) => {
+      state.seekTime = null;
+    },
   },
 });
 
@@ -67,6 +80,9 @@ export const {
   setVolume,
   toggleShuffle,
   toggleRepeat,
+  setMaxDuration,
+  seekToTime,
+  clearSeekTime,
 } = nowPlayingSlice.actions;
 
 export default nowPlayingSlice.reducer;

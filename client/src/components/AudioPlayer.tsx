@@ -1,36 +1,58 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { pauseSong, setProgress } from '@/lib/features/nowPlaying/nowPlayingSlice';
+import {
+  pauseSong,
+  setProgress,
+  setMaxDuration,
+  clearSeekTime,
+} from '@/lib/features/nowPlaying/nowPlayingSlice';
 
-export default function AudioPlayer({
-  audioRef,
-}: {
-  audioRef: React.RefObject<HTMLAudioElement | null>;
-}) {
+export default function AudioPlayer() {
+  const audioRef = useRef<HTMLAudioElement>(null);
   const dispatch = useAppDispatch();
-  const { currentSong, isPlaying, isRepeating, volume } = useAppSelector(
+  const { currentSong, isPlaying, isRepeating, volume, seekTime } = useAppSelector(
     (state) => state.nowPlaying,
   );
 
   // Handle initial/new song load
   useEffect(() => {
     if (!audioRef.current || !currentSong) return;
+    const audio = audioRef.current;
 
-    audioRef.current.src = currentSong.url;
-  }, [currentSong, audioRef]);
+    // Load the new song
+    audio.src = currentSong.url;
+
+    // Set the max duration of the new song for the slider
+    const handleLoadedMetadata = () => {
+      dispatch(setMaxDuration(audio.duration));
+    };
+
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    return () => audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+  }, [currentSong, audioRef, dispatch]);
 
   // Handle play/pause
   useEffect(() => {
     if (!audioRef.current || !currentSong) return;
+    const audio = audioRef.current;
 
     if (isPlaying) {
-      audioRef.current.play().catch(() => dispatch(pauseSong()));
+      audio.play().catch(() => dispatch(pauseSong()));
     } else {
-      audioRef.current.pause();
+      audio.pause();
     }
   }, [isPlaying, currentSong, dispatch, audioRef]);
+
+  // Handle seek requests
+  useEffect(() => {
+    if (!audioRef.current || seekTime === null) return;
+    const audio = audioRef.current;
+
+    audio.currentTime = seekTime;
+    dispatch(clearSeekTime());
+  }, [seekTime, audioRef, dispatch]);
 
   // Update progress slider as song plays
   useEffect(() => {
@@ -63,11 +85,12 @@ export default function AudioPlayer({
   // Handle volume
   useEffect(() => {
     if (!audioRef.current) return;
+    const audio = audioRef.current;
 
     if (volume > 0) {
-      audioRef.current.volume = volume;
+      audio.volume = volume;
     } else {
-      audioRef.current.volume = 0;
+      audio.volume = 0;
     }
   }, [audioRef, volume]);
 

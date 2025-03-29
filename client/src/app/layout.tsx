@@ -4,6 +4,7 @@ import './globals.css';
 import Navbar from '@/components/Navbar';
 import StoreProvider from './StoreProvider';
 import NowPlayingBar from '@/components/NowPlayingBar';
+import AudioPlayer from '@/components/AudioPlayer';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -32,6 +33,7 @@ export default function RootLayout({
           <Navbar />
           {children}
           <NowPlayingBar />
+          <AudioPlayer />
         </StoreProvider>
       </body>
     </html>
