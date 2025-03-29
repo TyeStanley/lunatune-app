@@ -10,7 +10,9 @@ export default function AudioPlayer({
   audioRef: React.RefObject<HTMLAudioElement | null>;
 }) {
   const dispatch = useAppDispatch();
-  const { currentSong, isPlaying, isRepeating } = useAppSelector((state) => state.nowPlaying);
+  const { currentSong, isPlaying, isRepeating, volume } = useAppSelector(
+    (state) => state.nowPlaying,
+  );
 
   // Handle initial/new song load
   useEffect(() => {
@@ -43,7 +45,7 @@ export default function AudioPlayer({
     return () => audio.removeEventListener('timeupdate', handleTimeUpdate);
   }, [dispatch, audioRef]);
 
-  // Handle repeat functionality
+  // Handle repeat
   useEffect(() => {
     if (!audioRef.current) return;
     const audio = audioRef.current;
@@ -57,6 +59,17 @@ export default function AudioPlayer({
     audio.addEventListener('ended', handleEnded);
     return () => audio.removeEventListener('ended', handleEnded);
   }, [audioRef, isRepeating]);
+
+  // Handle volume
+  useEffect(() => {
+    if (!audioRef.current) return;
+
+    if (volume > 0) {
+      audioRef.current.volume = volume;
+    } else {
+      audioRef.current.volume = 0;
+    }
+  }, [audioRef, volume]);
 
   return <audio ref={audioRef} preload="auto" crossOrigin="anonymous" />;
 }

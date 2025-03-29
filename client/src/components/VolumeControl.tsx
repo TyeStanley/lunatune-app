@@ -9,7 +9,7 @@ import { useCallback, useState } from 'react';
 export default function VolumeControl() {
   const dispatch = useAppDispatch();
   const { volume } = useAppSelector((state) => state.nowPlaying);
-  const [previousVolume, setPreviousVolume] = useState(100);
+  const [previousVolume, setPreviousVolume] = useState(1);
 
   const handleVolumeClick = useCallback(() => {
     if (volume > 0) {
@@ -20,9 +20,13 @@ export default function VolumeControl() {
     }
   }, [volume, previousVolume, dispatch]);
 
+  const handleVolumeChange = (value: number) => {
+    dispatch(setVolume(value));
+  };
+
   const getVolumeIcon = () => {
     if (volume === 0) return <VolumeX className="h-5 w-5" />;
-    if (volume < 50) return <Volume1 className="h-5 w-5" />;
+    if (volume < 0.5) return <Volume1 className="h-5 w-5" />;
     return <Volume2 className="h-5 w-5" />;
   };
 
@@ -35,7 +39,7 @@ export default function VolumeControl() {
         {getVolumeIcon()}
       </button>
       <div className="w-[100px]">
-        <Slider value={volume} max={100} onChange={(value) => dispatch(setVolume(value))} />
+        <Slider value={volume} max={1} onChange={handleVolumeChange} />
       </div>
     </div>
   );

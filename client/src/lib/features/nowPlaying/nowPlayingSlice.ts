@@ -21,7 +21,7 @@ const initialState: NowPlayingState = {
   currentSong: null,
   isPlaying: false,
   progress: 0,
-  volume: 100,
+  volume: 1,
   isShuffled: false,
   isRepeating: false,
 };
