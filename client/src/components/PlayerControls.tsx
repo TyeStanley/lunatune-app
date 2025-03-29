@@ -71,6 +71,7 @@ export default function PlayerControls() {
         onChange={handleProgressChange}
         formatLabel={formatTime}
         showLabels
+        seekOnDrag={false}
       />
     </div>
   );

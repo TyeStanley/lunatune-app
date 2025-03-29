@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 interface SliderProps {
   value: number;
@@ -8,6 +8,7 @@ interface SliderProps {
   onChange: (value: number) => void;
   formatLabel?: (value: number) => string;
   showLabels?: boolean;
+  seekOnDrag?: boolean;
 }
 
 export default function Slider({
@@ -16,10 +17,19 @@ export default function Slider({
   onChange,
   formatLabel,
   showLabels = false,
+  seekOnDrag = false,
 }: SliderProps) {
   const progressBarRef = useRef<HTMLDivElement>(null);
+  const [localValue, setLocalValue] = useState(value);
+  const [isDragging, setIsDragging] = useState(false);
 
-  const updateProgress = (e: React.MouseEvent<HTMLDivElement>) => {
+  useEffect(() => {
+    if (!isDragging) {
+      setLocalValue(value);
+    }
+  }, [value, isDragging]);
+
+  const updateProgress = (e: React.MouseEvent<HTMLDivElement>, dragging: boolean) => {
     if (!progressBarRef.current) return;
 
     const progressBar = progressBarRef.current;
@@ -30,19 +40,29 @@ export default function Slider({
     const boundedPercent = Math.max(0, Math.min(1, percent));
     const newTime = boundedPercent * max;
 
-    onChange(newTime);
+    setLocalValue(newTime);
+    if (seekOnDrag || !dragging) {
+      onChange(newTime);
+    }
   };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    updateProgress(e);
+    setIsDragging(true);
+    updateProgress(e, true);
 
     const handleMouseMove = (e: MouseEvent) => {
       e.preventDefault();
       const mouseEvent = e as unknown as React.MouseEvent<HTMLDivElement>;
-      updateProgress(mouseEvent);
+      updateProgress(mouseEvent, true);
     };
 
-    const handleMouseUp = () => {
+    const handleMouseUp = (e: MouseEvent) => {
+      const mouseEvent = e as unknown as React.MouseEvent<HTMLDivElement>;
+      updateProgress(mouseEvent, false);
+      requestAnimationFrame(() => {
+        setIsDragging(false);
+      });
+
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
@@ -54,7 +74,9 @@ export default function Slider({
   return (
     <div className="flex w-full items-center gap-2">
       {showLabels && formatLabel && (
-        <span className="min-w-[40px] text-right text-xs text-gray-400">{formatLabel(value)}</span>
+        <span className="min-w-[40px] text-right text-xs text-gray-400">
+          {formatLabel(localValue)}
+        </span>
       )}
       <div
         ref={progressBarRef}
@@ -63,7 +85,7 @@ export default function Slider({
       >
         <div
           className="group-hover:bg-primary absolute top-0 left-0 h-1 rounded-full bg-gray-200 transition-colors"
-          style={{ width: `${(value / max) * 100}%` }}
+          style={{ width: `${(localValue / max) * 100}%` }}
         />
       </div>
       {showLabels && formatLabel && (

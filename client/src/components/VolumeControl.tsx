@@ -39,7 +39,7 @@ export default function VolumeControl() {
         {getVolumeIcon()}
       </button>
       <div className="w-[100px]">
-        <Slider value={volume} max={1} onChange={handleVolumeChange} />
+        <Slider value={volume} max={1} onChange={handleVolumeChange} seekOnDrag={true} />
       </div>
     </div>
   );
