@@ -21,7 +21,7 @@ namespace MusicPlayer.Infrastructure.Migrations
                     Album = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
                     Genre = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     FilePath = table.Column<string>(type: "text", nullable: false),
-                    Duration = table.Column<TimeSpan>(type: "interval", nullable: false),
+                    DurationMs = table.Column<long>(type: "bigint", nullable: false),
                     AlbumArtUrl = table.Column<string>(type: "text", nullable: true),
                     IsFavorite = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),

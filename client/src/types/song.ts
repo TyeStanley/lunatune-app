@@ -5,7 +5,7 @@ export interface Song {
   album?: string;
   genre?: string;
   filePath: string;
-  duration: string;
+  durationMs: number;
   albumArtUrl?: string;
   isFavorite: boolean;
   createdAt: string;

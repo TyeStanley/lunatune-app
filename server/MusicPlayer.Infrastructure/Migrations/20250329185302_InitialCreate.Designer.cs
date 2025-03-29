@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MusicPlayer.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250319021935_InitialCreate")]
+    [Migration("20250329185302_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -46,8 +46,8 @@ namespace MusicPlayer.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<TimeSpan>("Duration")
-                        .HasColumnType("interval");
+                    b.Property<long>("DurationMs")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("FilePath")
                         .IsRequired()

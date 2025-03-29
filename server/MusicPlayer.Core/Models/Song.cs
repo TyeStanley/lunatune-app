@@ -10,7 +10,7 @@ public class Song
 
   // File essentials
   public required string FilePath { get; set; }
-  public TimeSpan Duration { get; set; }
+  public long DurationMs { get; set; }
   public string? AlbumArtUrl { get; set; }
 
   // Basic user interaction

@@ -1,31 +1,28 @@
 /**
- * Formats a duration string by removing leading zeros and unnecessary time components
- * @param duration - The duration string to format (e.g., "00:00:54" or "00:01:19")
- * @returns A formatted duration string without leading zeros, with "0:" prefix for durations less than a minute
+ * Formats milliseconds into a duration string (M:SS format)
+ * @param ms - The duration in milliseconds
+ * @returns A formatted duration string (e.g., "1:23" or "0:45")
  * @example
- * formatDuration("00:00:54") // returns "0:54"
- * formatDuration("00:01:19") // returns "1:19"
- * formatDuration("00:02:30") // returns "2:30"
+ * formatDuration(84000) // returns "1:24"
+ * formatDuration(45000) // returns "0:45"
  */
-export function formatDuration(duration: string): string {
-  const formatted = duration.replace(/^0+:/, '').replace(/^0+/, '');
-  // If the duration doesn't contain a colon, it's less than a minute
-  if (!formatted.includes(':')) {
-    return `0:${formatted}`;
-  }
-  return formatted;
+export function formatDuration(ms: number): string {
+  const totalSeconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  const paddedSeconds = seconds.toString().padStart(2, '0');
+  return `${minutes}:${paddedSeconds}`;
 }
 
 /**
- * Converts a duration string into total seconds
- * @param duration - The duration string to parse (e.g., "1:54" or "2:30")
+ * Converts milliseconds to seconds
+ * @param ms - The duration in milliseconds
  * @returns The total number of seconds
  * @example
- * parseDuration("1:54") // returns 114
- * parseDuration("2:30") // returns 150
- * parseDuration("0:45") // returns 45
+ * parseDuration(1500) // returns 1.5
+ * parseDuration(3000) // returns 3
  */
-export function parseDuration(duration: string): number {
-  const [hours, minutes, seconds] = duration.split(':').map(Number);
-  return hours * 3600 + minutes * 60 + seconds;
+export function parseMsToSeconds(ms: number): number {
+  return ms / 1000;
 }

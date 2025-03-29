@@ -28,7 +28,7 @@ export default async function Home() {
                 artist={song.artist}
                 album={song.album || ''}
                 dateAdded={song.createdAt}
-                duration={song.duration}
+                durationMs={song.durationMs}
               />
             ))}
           </div>

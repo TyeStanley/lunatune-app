@@ -4,8 +4,8 @@ import { Play, Heart, MoreHorizontal, Pause } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { playSong, pauseSong, resumeSong } from '@/lib/features/nowPlaying/nowPlayingSlice';
 import { musicService } from '@/services/musicService';
-import { formatDuration, parseDuration } from '@/utils/duration';
 import { getRelativeTime } from '@/utils/date';
+import { formatDuration } from '@/utils/duration';
 
 interface TrackItemProps {
   index: number;
@@ -14,7 +14,7 @@ interface TrackItemProps {
   artist: string;
   album: string;
   dateAdded: string;
-  duration: string;
+  durationMs: number;
 }
 
 export default function TrackItem({
@@ -24,7 +24,7 @@ export default function TrackItem({
   artist,
   album,
   dateAdded,
-  duration,
+  durationMs,
 }: TrackItemProps) {
   const dispatch = useAppDispatch();
   const { currentSong, isPlaying } = useAppSelector((state) => state.nowPlaying);
@@ -45,7 +45,7 @@ export default function TrackItem({
           title,
           artist,
           url: musicService.getStreamUrl(id),
-          duration: parseDuration(duration),
+          duration: durationMs,
         }),
       );
     }
@@ -101,7 +101,7 @@ export default function TrackItem({
           >
             <Heart size={18} />
           </button>
-          <span className="text-sm text-gray-400">{formatDuration(duration)}</span>
+          <span className="text-sm text-gray-400">{formatDuration(durationMs)}</span>
           <button
             className="hover:text-primary invisible text-gray-400 group-focus-within:visible group-hover:visible"
             aria-label="More options"

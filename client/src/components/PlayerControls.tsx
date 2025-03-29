@@ -17,7 +17,7 @@ export default function PlayerControls({
   audioRef: React.RefObject<HTMLAudioElement | null>;
 }) {
   const dispatch = useAppDispatch();
-  const { currentSong, isPlaying, progress, isShuffled, isRepeating } = useAppSelector(
+  const { isPlaying, progress, isShuffled, isRepeating } = useAppSelector(
     (state) => state.nowPlaying,
   );
 
@@ -73,7 +73,7 @@ export default function PlayerControls({
       </div>
       <Slider
         value={progress}
-        max={currentSong?.duration || 0}
+        max={audioRef.current?.duration || 0}
         onChange={handleProgressChange}
         formatLabel={formatTime}
         showLabels

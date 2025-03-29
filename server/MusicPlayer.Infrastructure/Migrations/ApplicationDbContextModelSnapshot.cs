@@ -43,8 +43,8 @@ namespace MusicPlayer.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<TimeSpan>("Duration")
-                        .HasColumnType("interval");
+                    b.Property<long>("DurationMs")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("FilePath")
                         .IsRequired()
