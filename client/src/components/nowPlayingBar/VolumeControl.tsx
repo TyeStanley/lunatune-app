@@ -1,14 +1,14 @@
 'use client';
 
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { setVolume } from '@/lib/features/nowPlaying/nowPlayingSlice';
+import { setVolume } from '@/lib/features/playbackControls/playbackControlsSlice';
 import { Volume1, Volume2, VolumeX } from 'lucide-react';
-import Slider from './ui/Slider';
+import Slider from '../ui/Slider';
 import { useCallback, useState } from 'react';
 
 export default function VolumeControl() {
   const dispatch = useAppDispatch();
-  const { volume } = useAppSelector((state) => state.nowPlaying);
+  const { volume } = useAppSelector((state) => state.playbackControls);
   const [previousVolume, setPreviousVolume] = useState(1);
 
   const handleVolumeClick = useCallback(() => {

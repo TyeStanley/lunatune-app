@@ -5,7 +5,7 @@ import PlayerControls from './PlayerControls';
 import VolumeControl from './VolumeControl';
 
 export default function NowPlayingBar() {
-  const { currentSong } = useAppSelector((state) => state.nowPlaying);
+  const { currentSong } = useAppSelector((state) => state.queue);
 
   if (!currentSong) return null;
 

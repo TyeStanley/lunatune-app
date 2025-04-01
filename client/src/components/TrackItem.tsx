@@ -1,11 +1,13 @@
 'use client';
 
-import { Play, Heart, MoreHorizontal, Pause } from 'lucide-react';
+import { Play, Heart, Pause, Plus } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { playSong, pauseSong, resumeSong } from '@/lib/features/nowPlaying/nowPlayingSlice';
+import { pause, play } from '@/lib/features/playbackControls/playbackControlsSlice';
 import { musicService } from '@/services/musicService';
 import { getRelativeTime } from '@/utils/date';
 import { formatDuration } from '@/utils/duration';
+import { playSong, addToUpcoming } from '@/lib/features/queue/queueSlice';
+import { DropdownMenu } from './ui/DropdownMenu';
 
 interface TrackItemProps {
   index: number;
@@ -27,16 +29,17 @@ export default function TrackItem({
   durationMs,
 }: TrackItemProps) {
   const dispatch = useAppDispatch();
-  const { currentSong, isPlaying } = useAppSelector((state) => state.nowPlaying);
+  const { currentSong } = useAppSelector((state) => state.queue);
+  const { isPlaying } = useAppSelector((state) => state.playbackControls);
   const isCurrentSong = currentSong?.id === id;
   const isCurrentlyPlaying = isCurrentSong && isPlaying;
 
   const handlePlayClick = () => {
     if (isCurrentSong) {
       if (isPlaying) {
-        dispatch(pauseSong());
+        dispatch(pause());
       } else {
-        dispatch(resumeSong());
+        dispatch(play());
       }
     } else {
       dispatch(
@@ -51,9 +54,29 @@ export default function TrackItem({
     }
   };
 
+  const handleAddToQueue = () => {
+    dispatch(
+      addToUpcoming({
+        id,
+        title,
+        artist,
+        url: musicService.getStreamUrl(id),
+        duration: durationMs,
+      }),
+    );
+  };
+
+  const menuItems = [
+    {
+      label: 'Add to Queue',
+      icon: <Plus />,
+      onClick: handleAddToQueue,
+    },
+  ];
+
   return (
     <div
-      className="group hover:bg-background-lighter focus:from-background-lighter focus:to-primary/30 relative flex items-center rounded-md p-4 transition-all duration-300 ease-in-out focus:bg-gradient-to-l"
+      className="group hover:bg-background-lighter focus-within:from-background-lighter focus-within:to-primary/30 relative flex items-center rounded-md p-4 transition-all duration-300 ease-in-out focus-within:bg-gradient-to-l"
       tabIndex={0}
     >
       {/* Track Number/Play Button Area */}
@@ -62,7 +85,7 @@ export default function TrackItem({
           {index + 1}
         </span>
         <button
-          className="hover:text-primary hidden text-gray-200 group-focus-within:block group-hover:block"
+          className="hover:text-primary hidden cursor-pointer text-gray-200 group-focus-within:block group-hover:block"
           aria-label={isCurrentlyPlaying ? 'Pause' : 'Play'}
           onClick={handlePlayClick}
         >
@@ -102,12 +125,7 @@ export default function TrackItem({
             <Heart size={18} />
           </button>
           <span className="text-sm text-gray-400">{formatDuration(durationMs)}</span>
-          <button
-            className="hover:text-primary invisible text-gray-400 group-focus-within:visible group-hover:visible"
-            aria-label="More options"
-          >
-            <MoreHorizontal size={18} />
-          </button>
+          <DropdownMenu items={menuItems} />
         </div>
       </div>
     </div>

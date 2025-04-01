@@ -2,24 +2,26 @@
 
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import {
-  pauseSong,
-  resumeSong,
+  pause,
+  play,
   toggleShuffle,
   toggleRepeat,
-  seekToTime,
-} from '@/lib/features/nowPlaying/nowPlayingSlice';
+  setSeekTime,
+} from '@/lib/features/playbackControls/playbackControlsSlice';
+import { skipForward, skipBack } from '@/lib/features/queue/queueSlice';
 import { Play, Pause, SkipForward, SkipBack, Repeat, Shuffle } from 'lucide-react';
-import Slider from './ui/Slider';
+import Slider from '../ui/Slider';
 import { formatTime } from '@/utils/time';
 
 export default function PlayerControls() {
   const dispatch = useAppDispatch();
   const { isPlaying, progress, isShuffled, isRepeating, maxDuration } = useAppSelector(
-    (state) => state.nowPlaying,
+    (state) => state.playbackControls,
   );
+  const { upcomingSongs, playedSongs } = useAppSelector((state) => state.queue);
 
   const handleProgressChange = (value: number) => {
-    dispatch(seekToTime(value));
+    dispatch(setSeekTime(value));
   };
 
   const controlButtonClass = (isActive: boolean) =>
@@ -36,16 +38,20 @@ export default function PlayerControls() {
         >
           <Shuffle className="h-5 w-5" />
         </button>
-        <button className={controlButtonClass(false)}>
+        <button
+          className={controlButtonClass(false)}
+          onClick={() => dispatch(skipBack())}
+          disabled={!playedSongs.length}
+        >
           <SkipBack className="h-5 w-5" />
         </button>
         <button
           className="cursor-pointer rounded-full bg-gray-200 p-2 transition hover:scale-105 hover:bg-white"
           onClick={() => {
             if (isPlaying) {
-              dispatch(pauseSong());
+              dispatch(pause());
             } else {
-              dispatch(resumeSong());
+              dispatch(play());
             }
           }}
         >
@@ -55,7 +61,11 @@ export default function PlayerControls() {
             <Play className="text-background h-5 w-5" />
           )}
         </button>
-        <button className={controlButtonClass(false)}>
+        <button
+          className={controlButtonClass(false)}
+          onClick={() => dispatch(skipForward())}
+          disabled={!upcomingSongs.length}
+        >
           <SkipForward className="h-5 w-5" />
         </button>
         <button
