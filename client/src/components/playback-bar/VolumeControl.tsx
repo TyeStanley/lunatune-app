@@ -1,7 +1,7 @@
 'use client';
 
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { setVolume } from '@/lib/features/playbackControls/playbackControlsSlice';
+import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
+import { setVolume } from '@/lib/redux/features/playback-controls/playbackControlsSlice';
 import { Volume1, Volume2, VolumeX } from 'lucide-react';
 import Slider from '../ui/Slider';
 import { useCallback, useState } from 'react';

@@ -1,10 +1,10 @@
 'use client';
 
-import { useAppSelector } from '@/lib/hooks';
+import { useAppSelector } from '@/lib/redux/hooks';
 import PlayerControls from './PlayerControls';
 import VolumeControl from './VolumeControl';
 
-export default function NowPlayingBar() {
+export default function PlaybackBar() {
   const { currentSong } = useAppSelector((state) => state.queue);
 
   if (!currentSong) return null;

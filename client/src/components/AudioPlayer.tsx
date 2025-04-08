@@ -1,14 +1,14 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
 import {
   pause,
   setProgress,
   setMaxDuration,
   clearSeekTime,
-} from '@/lib/features/playbackControls/playbackControlsSlice';
-import { skipForward } from '@/lib/features/queue/queueSlice';
+} from '@/lib/redux/features/playback-controls/playbackControlsSlice';
+import { skipForward } from '@/lib/redux/features/queue/queueSlice';
 
 export default function AudioPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);

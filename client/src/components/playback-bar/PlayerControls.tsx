@@ -1,17 +1,17 @@
 'use client';
 
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
 import {
   pause,
   play,
   toggleShuffle,
   toggleRepeat,
   setSeekTime,
-} from '@/lib/features/playbackControls/playbackControlsSlice';
-import { skipForward, skipBack } from '@/lib/features/queue/queueSlice';
+} from '@/lib/redux/features/playback-controls/playbackControlsSlice';
+import { skipForward, skipBack } from '@/lib/redux/features/queue/queueSlice';
 import { Play, Pause, SkipForward, SkipBack, Repeat, Shuffle } from 'lucide-react';
 import Slider from '../ui/Slider';
-import { formatTime } from '@/utils/time';
+import { formatTime } from '@/lib/utils/time';
 
 export default function PlayerControls() {
   const dispatch = useAppDispatch();

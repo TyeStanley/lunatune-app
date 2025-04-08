@@ -1,12 +1,12 @@
 'use client';
 
 import { Play, Heart, Pause, Plus } from 'lucide-react';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { pause, play } from '@/lib/features/playbackControls/playbackControlsSlice';
+import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
+import { pause, play } from '@/lib/redux/features/playback-controls/playbackControlsSlice';
 import { musicService } from '@/services/musicService';
-import { getRelativeTime } from '@/utils/date';
-import { formatDuration } from '@/utils/duration';
-import { playSong, addToUpcoming } from '@/lib/features/queue/queueSlice';
+import { getRelativeTime } from '@/lib/utils/date';
+import { formatDuration } from '@/lib/utils/duration';
+import { playSong, addToUpcoming } from '@/lib/redux/features/queue/queueSlice';
 import { DropdownMenu } from './ui/DropdownMenu';
 
 interface TrackItemProps {

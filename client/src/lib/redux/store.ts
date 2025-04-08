@@ -1,5 +1,5 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import playbackControlsReducer from './features/playbackControls/playbackControlsSlice';
+import playbackControlsReducer from './features/playback-controls/playbackControlsSlice';
 import queueReducer from './features/queue/queueSlice';
 
 export const makeStore = () => {

@@ -2,6 +2,7 @@
 
 import { Download } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import AuthButton from './auth/AuthButton';
 
 export default function Navbar() {
   const [isDesktop, setIsDesktop] = useState(false);
@@ -23,8 +24,13 @@ export default function Navbar() {
   return (
     <nav className="bg-background-light border-background-lighter border-b">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 justify-end">
+        <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
+            <h1 className="text-xl font-semibold text-white">Music Player</h1>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <AuthButton />
             {!isDesktop && (
               <a
                 href="/installer/music-player.exe"
