@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using MusicPlayer.Core.Interfaces;
 using MusicPlayer.Core.Models;
 
@@ -6,12 +7,14 @@ namespace MusicPlayer.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class SongsController(IMusicService musicService, IFileStorageService fileStorageService) : ControllerBase
 {
   private readonly IMusicService _musicService = musicService;
   private readonly IFileStorageService _fileStorageService = fileStorageService;
 
   [HttpGet]
+  [AllowAnonymous]
   public async Task<ActionResult<IEnumerable<Song>>> GetSongs()
   {
     var songs = await _musicService.GetAllSongsAsync();
@@ -48,5 +51,11 @@ public class SongsController(IMusicService musicService, IFileStorageService fil
     {
       return StatusCode(500, "Error streaming file");
     }
+  }
+
+  [HttpGet("test-auth")]
+  public IActionResult TestAuth()
+  {
+    return Ok(new { message = "You are authenticated!" });
   }
 }
