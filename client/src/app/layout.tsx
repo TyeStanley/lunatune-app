@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import Navbar from '@/components/Navbar';
 import StoreProvider from '@/lib/providers/StoreProvider';
 import PlaybackBar from '@/components/playback-bar';
 import AudioPlayer from '@/components/AudioPlayer';
@@ -39,7 +38,6 @@ export default function RootLayout({
 
               {/* Content */}
               <div className="relative">
-                <Navbar />
                 {children}
                 <PlaybackBar />
                 <AudioPlayer />
