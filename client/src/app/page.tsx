@@ -18,11 +18,7 @@ export default function Home() {
 
   if (isLoading || isAuthenticated) {
     return (
-      <div className="bg-background relative min-h-screen">
-        {/* Background gradients */}
-        <div className="from-background via-background-light/10 to-primary/5 absolute inset-0 bg-gradient-to-br" />
-        <div className="from-primary/10 via-background to-background absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))]" />
-
+      <div className="relative min-h-screen">
         {/* Content */}
         <div className="relative flex min-h-screen items-center justify-center">
           <div className="animate-fadeIn text-center">
@@ -41,12 +37,6 @@ export default function Home() {
 
   return (
     <main className="relative min-h-screen">
-      {/* Main background gradient */}
-      <div className="bg-background absolute inset-0">
-        <div className="from-background via-background-light/10 to-primary/5 absolute inset-0 bg-gradient-to-br" />
-        <div className="from-primary/10 via-background to-background absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))]" />
-      </div>
-
       {/* Content */}
       <div className="relative">
         <div className="from-background-lighter/5 pointer-events-none absolute inset-0 bg-gradient-to-b to-transparent" />
