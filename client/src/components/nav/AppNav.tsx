@@ -1,10 +1,11 @@
 'use client';
 
-import { Download, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import AuthButton from '../auth/AuthButton';
 import NavLogo from './NavLogo';
 import { useTauriCheck } from '@/hooks/useTauriCheck';
+import InstallAppButton from './InstallAppButton';
 
 export default function AppNav() {
   const isDesktop = useTauriCheck();
@@ -35,16 +36,7 @@ export default function AppNav() {
 
           <div className="flex items-center gap-4">
             <AuthButton btnText="Log out" />
-            {!isDesktop && (
-              <a
-                href="/installer/music-player.exe"
-                download="music-player-installer.exe"
-                className="bg-background-lighter hover:bg-primary/20 inline-flex cursor-pointer items-center gap-2 rounded-md px-4 py-2 text-sm text-gray-200 transition-colors"
-              >
-                <Download size={16} />
-                <span>Install App</span>
-              </a>
-            )}
+            {!isDesktop && <InstallAppButton />}
           </div>
         </div>
       </div>
