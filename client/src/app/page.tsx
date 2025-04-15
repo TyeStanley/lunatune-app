@@ -40,7 +40,7 @@ export default function Home() {
       {/* Content */}
       <div className="relative">
         <div className="from-background-lighter/5 pointer-events-none absolute inset-0 bg-gradient-to-b to-transparent" />
-        <div className="relative mx-auto max-w-4xl px-4 py-12">
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           {/* Hero Section */}
           <div className="animate-fadeIn mb-16 text-center">
             <div className="mb-4">
@@ -62,8 +62,8 @@ export default function Home() {
           {/* Trending Section (TODO: Hook up to API) */}
           <div className="mb-16">
             <h2 className="mb-6 text-xl font-semibold text-gray-200">TRENDING THIS WEEK</h2>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-              {[1, 2, 3].map((item) => (
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
+              {[1, 2, 3, 4].map((item) => (
                 <div
                   key={item}
                   className="group bg-background-lighter/80 border-background-lighter hover:border-primary/50 cursor-pointer rounded-lg border p-4 backdrop-blur-sm transition-all duration-300"
