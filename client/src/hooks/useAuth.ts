@@ -11,7 +11,18 @@ export const useAuth = () => {
     getAccessTokenSilently,
   } = useAuth0();
 
-  const login = () => loginWithRedirect();
+  const login = () => {
+    const returnTo = localStorage.getItem('returnTo');
+    loginWithRedirect({
+      appState: {
+        returnTo: returnTo || '/dashboard',
+      },
+      authorizationParams: {
+        prompt: 'login',
+      },
+    });
+    localStorage.removeItem('returnTo');
+  };
 
   const signOut = () => {
     logout({

@@ -1,6 +1,6 @@
 'use client';
 
-import { Download } from 'lucide-react';
+import { Download, Moon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AuthButton from './auth/AuthButton';
 
@@ -25,12 +25,18 @@ export default function Navbar() {
     <nav className="bg-background-light border-background-lighter border-b">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          <div className="flex items-center">
-            <h1 className="text-xl font-semibold text-white">Music Player</h1>
+          <div className="group flex cursor-pointer items-center gap-2">
+            <Moon
+              size={24}
+              className="text-primary transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12"
+            />
+            <h1 className="group-hover:text-primary text-xl font-semibold text-white transition-colors duration-300">
+              Lunatune
+            </h1>
           </div>
 
           <div className="flex items-center gap-4">
-            <AuthButton />
+            <AuthButton btnText="Log in" />
             {!isDesktop && (
               <a
                 href="/installer/music-player.exe"

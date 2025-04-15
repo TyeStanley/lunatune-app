@@ -2,7 +2,13 @@
 
 import { useAuth } from '@/hooks/useAuth';
 
-export default function AuthButton() {
+export default function AuthButton({
+  btnText,
+  className,
+}: {
+  btnText: string;
+  className?: string;
+}) {
   const { isAuthenticated, isLoading, login, signOut, user } = useAuth();
 
   if (isLoading) {
@@ -15,24 +21,21 @@ export default function AuthButton() {
 
   if (isAuthenticated && user) {
     return (
-      <div className="flex items-center gap-4">
-        <span className="text-sm text-gray-400">{user.name || user.email}</span>
-        <button
-          className="bg-background-lighter hover:bg-primary/20 inline-flex cursor-pointer items-center gap-2 rounded-md px-4 py-2 text-sm text-gray-200 transition-colors"
-          onClick={() => signOut()}
-        >
-          Log out
-        </button>
-      </div>
+      <button
+        className="bg-background-lighter hover:bg-primary/20 inline-flex cursor-pointer items-center gap-2 rounded-md px-4 py-2 text-sm text-gray-200 transition-colors"
+        onClick={() => signOut()}
+      >
+        Log out
+      </button>
     );
   }
 
   return (
     <button
-      className="bg-background-lighter hover:bg-primary/20 inline-flex cursor-pointer items-center gap-2 rounded-md px-4 py-2 text-sm text-gray-200 transition-colors"
+      className={`bg-background-lighter hover:bg-primary/20 inline-flex cursor-pointer items-center gap-2 rounded-md px-4 py-2 text-sm text-gray-200 transition-colors ${className}`}
       onClick={() => login()}
     >
-      Log in
+      {btnText}
     </button>
   );
 }
