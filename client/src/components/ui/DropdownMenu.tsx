@@ -40,18 +40,22 @@ export function DropdownMenu({ trigger, items, className = '' }: DropdownMenuPro
   );
 
   return (
-    <div className={`relative ${className}`} ref={menuRef}>
+    <div className={`relative inline-block ${className}"}`} ref={menuRef}>
       <button
-        className="flex h-[18px] w-[18px] cursor-pointer items-center justify-center"
+        className="flex cursor-pointer items-center justify-center"
         onClick={(e) => {
           e.stopPropagation();
           setIsOpen(!isOpen);
         }}
+        role="button"
+        tabIndex={0}
+        aria-haspopup="true"
+        aria-expanded={isOpen}
       >
         {trigger || defaultTrigger}
       </button>
       {isOpen && (
-        <div className="bg-background-lighter absolute top-[18px] right-0 z-50 min-w-[180px] rounded-md py-1 shadow-lg ring-1 ring-black/5 transition-all duration-200">
+        <div className="bg-background-lighter border-primary/50 absolute top-full right-0 z-40 mt-2 min-w-[180px] rounded-md border shadow-lg ring-1 ring-black/5 transition-all duration-200">
           {items.map((item, index) => (
             <button
               key={index}

@@ -1,15 +1,23 @@
 'use client';
 
 import { useAuth } from '@/hooks/useAuth';
+import { DropdownMenu } from '../ui/DropdownMenu';
 
 export default function AuthButton({
   btnText,
   className,
 }: {
-  btnText: string;
+  btnText?: string;
   className?: string;
 }) {
   const { isAuthenticated, isLoading, login, signOut, user } = useAuth();
+
+  const dropdownMenuItems = [
+    {
+      label: 'Log out',
+      onClick: signOut,
+    },
+  ];
 
   if (isLoading) {
     return (
@@ -21,12 +29,14 @@ export default function AuthButton({
 
   if (isAuthenticated && user) {
     return (
-      <button
-        className="bg-background-lighter hover:bg-primary/20 inline-flex cursor-pointer items-center gap-2 rounded-md px-4 py-2 text-sm text-gray-200 transition-colors"
-        onClick={() => signOut()}
-      >
-        Log out
-      </button>
+      <DropdownMenu
+        trigger={
+          <div className="bg-background-lighter hover:bg-primary/20 inline-flex cursor-pointer items-center rounded-md px-4 py-2 text-sm text-gray-200 transition-colors">
+            {user.name || 'Account'}
+          </div>
+        }
+        items={dropdownMenuItems}
+      />
     );
   }
 
@@ -35,7 +45,7 @@ export default function AuthButton({
       className={`bg-background-lighter hover:bg-primary/20 inline-flex cursor-pointer items-center gap-2 rounded-md px-4 py-2 text-sm text-gray-200 transition-colors ${className}`}
       onClick={() => login()}
     >
-      {btnText}
+      {btnText || 'Log in'}
     </button>
   );
 }

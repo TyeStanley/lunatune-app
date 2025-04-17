@@ -55,7 +55,10 @@ export default function Home() {
                 Music that feels right
               </h1>
               <p className="mb-4 text-gray-400">Your personal soundtrack, curated just for you</p>
-              <AuthButton btnText="Log in" />
+              <AuthButton
+                btnText="Get Started"
+                className="bg-primary hover:bg-primary/90 text-background-lighter rounded-lg px-5 py-2 font-semibold transition-colors duration-300"
+              />
             </div>
           </div>
 

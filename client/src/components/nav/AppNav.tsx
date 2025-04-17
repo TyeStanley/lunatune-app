@@ -16,8 +16,9 @@ export default function AppNav() {
   };
 
   return (
-    <nav className="bg-background-light border-background-lighter border-b">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <nav className="border-background-lighter relative border-b">
+      <div className="from-background-light/80 via-background/60 to-primary/10 absolute inset-0 z-0 bg-gradient-to-r" />
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between gap-8">
           <div className="flex items-center gap-8">
             <NavLogo />
@@ -35,8 +36,8 @@ export default function AppNav() {
           </div>
 
           <div className="flex items-center gap-4">
-            <AuthButton btnText="Log out" />
             {!isDesktop && <InstallAppButton />}
+            <AuthButton />
           </div>
         </div>
       </div>
