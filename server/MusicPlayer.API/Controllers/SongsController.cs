@@ -14,7 +14,6 @@ public class SongsController(IMusicService musicService, IFileStorageService fil
   private readonly IFileStorageService _fileStorageService = fileStorageService;
 
   [HttpGet]
-  [AllowAnonymous]
   public async Task<ActionResult<IEnumerable<Song>>> GetSongs()
   {
     var songs = await _musicService.GetAllSongsAsync();

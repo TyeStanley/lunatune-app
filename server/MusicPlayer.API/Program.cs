@@ -3,7 +3,6 @@ using MusicPlayer.Core.Interfaces;
 using MusicPlayer.Infrastructure.Data;
 using MusicPlayer.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,10 +10,11 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
         policy => policy
-            .AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .WithExposedHeaders("Content-Range", "Accept-Ranges", "Content-Length", "Content-Type"));
+            .WithOrigins("http://localhost:3000")
+            .WithMethods("GET", "POST", "PUT", "DELETE")
+            .WithHeaders("Authorization", "Content-Type")
+            .AllowCredentials()
+    );
 });
 
 builder.Services.AddControllers();
@@ -27,22 +27,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IMusicService, MusicService>();
 builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
-{
-    options.Authority = $"https://{builder.Configuration["Auth0:Domain"]}/";
-    options.Audience = builder.Configuration["Auth0:Audience"];
-    options.TokenValidationParameters = new TokenValidationParameters
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        ValidateIssuerSigningKey = true,
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-    };
-});
+        options.Authority = "https://dev-xtldi0geo2fqomh7.us.auth0.com/";
+        options.Audience = "https://lunatune-api";
+        options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
+    });
 
 var app = builder.Build();
 
@@ -60,14 +51,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
 app.UseCors("AllowFrontend");
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.UseStaticFiles();
-
 app.MapControllers();
 
 app.Run();

@@ -1,10 +1,15 @@
 import { Song } from '../types/song';
 
-const API_BASE_URL = 'http://localhost:5133/api';
+const API_BASE_URL = 'http://localhost:5000/api';
 
 export const musicService = {
   async getSongs(): Promise<Song[]> {
-    const response = await fetch(`${API_BASE_URL}/songs`);
+    const response = await fetch(`${API_BASE_URL}/songs`, {
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
     if (!response.ok) {
       throw new Error('Failed to fetch songs');
