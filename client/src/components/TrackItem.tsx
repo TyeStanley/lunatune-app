@@ -46,7 +46,6 @@ export default function TrackItem({
           id,
           title,
           artist,
-          url: `http://localhost:5133/api/songs/${id}/stream`,
           duration: durationMs,
         }),
       );
@@ -59,7 +58,6 @@ export default function TrackItem({
         id,
         title,
         artist,
-        url: `http://localhost:5133/api/songs/${id}/stream`,
         duration: durationMs,
       }),
     );

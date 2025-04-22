@@ -5,7 +5,6 @@ import StoreProvider from '@/providers/StoreProvider';
 import PlaybackBar from '@/components/playback-bar';
 import AudioPlayer from '@/components/AudioPlayer';
 import AuthProvider from '@/providers/AuthProvider';
-import ApiProvider from '@/providers/ApiProvider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -32,20 +31,18 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <AuthProvider>
           <StoreProvider>
-            <ApiProvider>
-              <div className="bg-background relative min-h-screen">
-                {/* Background gradients */}
-                <div className="from-background via-background-light/10 to-primary/5 absolute inset-0 bg-gradient-to-br" />
-                <div className="from-primary/10 via-background to-background absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))]" />
+            <div className="bg-background relative min-h-screen">
+              {/* Background gradients */}
+              <div className="from-background via-background-light/10 to-primary/5 absolute inset-0 bg-gradient-to-br" />
+              <div className="from-primary/10 via-background to-background absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))]" />
 
-                {/* Content */}
-                <div className="relative">
-                  {children}
-                  <PlaybackBar />
-                  <AudioPlayer />
-                </div>
+              {/* Content */}
+              <div className="relative">
+                {children}
+                <PlaybackBar />
+                <AudioPlayer />
               </div>
-            </ApiProvider>
+            </div>
           </StoreProvider>
         </AuthProvider>
       </body>

@@ -33,7 +33,6 @@ public class SongsController(IMusicService musicService, IFileStorageService fil
   }
 
   [HttpGet("{id}/stream")]
-  [AllowAnonymous]
   public async Task<IActionResult> StreamSong(Guid id)
   {
     var song = await _musicService.GetSongByIdAsync(id);

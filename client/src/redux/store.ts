@@ -1,6 +1,7 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import playbackControlsReducer from './state/playback-controls/playbackControlsSlice';
 import queueReducer from './state/queue/queueSlice';
+import authReducer from './state/auth/authSlice';
 import { songApi } from './api/songApi';
 
 export const makeStore = () => {
@@ -8,6 +9,7 @@ export const makeStore = () => {
     reducer: {
       playbackControls: playbackControlsReducer,
       queue: queueReducer,
+      auth: authReducer,
       [songApi.reducerPath]: songApi.reducer,
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(songApi.middleware),

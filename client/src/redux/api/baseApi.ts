@@ -1,8 +1,7 @@
 import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { baseUrl } from '@/constants';
 
-const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5133/api';
-
-let getAccessTokenSilently: (() => Promise<string>) | null = null;
+export let getAccessTokenSilently: (() => Promise<string>) | null = null;
 
 export const configureTokenApi = (getToken: () => Promise<string>) => {
   getAccessTokenSilently = getToken;
