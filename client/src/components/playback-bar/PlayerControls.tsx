@@ -1,14 +1,14 @@
 'use client';
 
-import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import {
   pause,
   play,
   toggleShuffle,
   toggleRepeat,
   setSeekTime,
-} from '@/lib/redux/features/playback-controls/playbackControlsSlice';
-import { skipForward, skipBack } from '@/lib/redux/features/queue/queueSlice';
+} from '@/redux/state/playback-controls/playbackControlsSlice';
+import { skipForward, skipBack } from '@/redux/state/queue/queueSlice';
 import { Play, Pause, SkipForward, SkipBack, Repeat, Shuffle } from 'lucide-react';
 import Slider from '../ui/Slider';
 import { formatTime } from '@/lib/utils/time';

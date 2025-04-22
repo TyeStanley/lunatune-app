@@ -1,13 +1,16 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import playbackControlsReducer from './features/playback-controls/playbackControlsSlice';
-import queueReducer from './features/queue/queueSlice';
+import playbackControlsReducer from './state/playback-controls/playbackControlsSlice';
+import queueReducer from './state/queue/queueSlice';
+import { songApi } from './api/songApi';
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
       playbackControls: playbackControlsReducer,
       queue: queueReducer,
+      [songApi.reducerPath]: songApi.reducer,
     },
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(songApi.middleware),
   });
 };
 

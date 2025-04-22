@@ -1,6 +1,6 @@
 'use client';
 
-import { useAppSelector } from '@/lib/redux/hooks';
+import { useAppSelector } from '@/redux/hooks';
 import PlayerControls from './PlayerControls';
 import VolumeControl from './VolumeControl';
 

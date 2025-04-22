@@ -1,12 +1,11 @@
 'use client';
 
 import { Play, Heart, Pause, Plus } from 'lucide-react';
-import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
-import { pause, play } from '@/lib/redux/features/playback-controls/playbackControlsSlice';
-import { musicService } from '@/services/musicService';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { pause, play } from '@/redux/state/playback-controls/playbackControlsSlice';
 import { getRelativeTime } from '@/lib/utils/date';
 import { formatDuration } from '@/lib/utils/duration';
-import { playSong, addToUpcoming } from '@/lib/redux/features/queue/queueSlice';
+import { playSong, addToUpcoming } from '@/redux/state/queue/queueSlice';
 import { DropdownMenu } from './ui/DropdownMenu';
 
 interface TrackItemProps {
@@ -47,7 +46,7 @@ export default function TrackItem({
           id,
           title,
           artist,
-          url: musicService.getStreamUrl(id),
+          url: `http://localhost:5133/api/songs/${id}/stream`,
           duration: durationMs,
         }),
       );
@@ -60,7 +59,7 @@ export default function TrackItem({
         id,
         title,
         artist,
-        url: musicService.getStreamUrl(id),
+        url: `http://localhost:5133/api/songs/${id}/stream`,
         duration: durationMs,
       }),
     );

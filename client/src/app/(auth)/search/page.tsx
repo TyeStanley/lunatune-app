@@ -1,32 +1,23 @@
 'use client';
 
-import { useAuth } from '@/hooks/useAuth';
+import TrackItem from '@/components/TrackItem';
 import { Search } from 'lucide-react';
-import { useEffect, useState } from 'react';
-
-const SONGS_API_URL = 'http://localhost:5133/api/songs';
+import { useState } from 'react';
+import { useGetSongsQuery } from '@/redux/api/songApi';
+import { Song } from '@/types/song';
 
 export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  // const [results, setResults] = useState<any[]>([]);
-  // const [isLoading, setIsLoading] = useState(true);
-  // const [error, setError] = useState<string | null>(null);
-  const { getAccessTokenSilently } = useAuth();
+  const { data: songs = [], isLoading, error } = useGetSongsQuery(undefined);
 
-  useEffect(() => {
-    const fetchSongs = async () => {
-      const token = await getAccessTokenSilently();
-      const songs = await fetch(SONGS_API_URL, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await songs.json();
-      console.log(data);
-    };
-
-    fetchSongs();
-  }, []);
+  const filteredSongs = songs.filter((song: Song) => {
+    const searchLower = searchQuery.toLowerCase();
+    return (
+      song.title.toLowerCase().includes(searchLower) ||
+      song.artist.toLowerCase().includes(searchLower) ||
+      song.album?.toLowerCase().includes(searchLower)
+    );
+  });
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -45,18 +36,18 @@ export default function SearchPage() {
       </div>
 
       {/* Results List */}
-      {/* <div className="bg-background-lighter rounded-lg">
+      <div className="bg-background-lighter rounded-lg">
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
             <p className="text-gray-400">Loading songs...</p>
           </div>
         ) : error ? (
           <div className="flex items-center justify-center py-8">
-            <p className="text-gray-400">{error}</p>
+            <p className="text-gray-400">Error loading songs</p>
           </div>
         ) : (
           <>
-            {results.map((song, index) => (
+            {filteredSongs.map((song: Song, index: number) => (
               <TrackItem
                 key={song.id}
                 index={index}
@@ -68,14 +59,14 @@ export default function SearchPage() {
                 durationMs={song.durationMs}
               />
             ))}
-            {results.length === 0 && (
+            {filteredSongs.length === 0 && (
               <div className="flex items-center justify-center py-8">
                 <p className="text-gray-400">No songs found</p>
               </div>
             )}
           </>
         )}
-      </div> */}
+      </div>
     </div>
   );
 }

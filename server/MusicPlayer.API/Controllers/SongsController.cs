@@ -33,6 +33,7 @@ public class SongsController(IMusicService musicService, IFileStorageService fil
   }
 
   [HttpGet("{id}/stream")]
+  [AllowAnonymous]
   public async Task<IActionResult> StreamSong(Guid id)
   {
     var song = await _musicService.GetSongByIdAsync(id);
@@ -50,11 +51,5 @@ public class SongsController(IMusicService musicService, IFileStorageService fil
     {
       return StatusCode(500, "Error streaming file");
     }
-  }
-
-  [HttpGet("test-auth")]
-  public IActionResult TestAuth()
-  {
-    return Ok(new { message = "You are authenticated!" });
   }
 }

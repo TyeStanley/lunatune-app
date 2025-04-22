@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AppThunk } from '@/lib/redux/store';
+import { AppThunk } from '@/redux/store';
 import { play } from '../playback-controls/playbackControlsSlice';
 
 interface Song {
