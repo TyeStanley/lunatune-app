@@ -5,6 +5,7 @@ import StoreProvider from '@/providers/StoreProvider';
 import PlaybackBar from '@/components/playback-bar';
 import AudioPlayer from '@/components/AudioPlayer';
 import AuthProvider from '@/providers/AuthProvider';
+import UserManager from '@/components/UserManager';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -29,8 +30,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <AuthProvider>
-          <StoreProvider>
+        <StoreProvider>
+          <AuthProvider>
+            <UserManager />
             <div className="bg-background relative min-h-screen">
               {/* Background gradients */}
               <div className="from-background via-background-light/10 to-primary/5 absolute inset-0 bg-gradient-to-br" />
@@ -43,8 +45,8 @@ export default function RootLayout({
                 <AudioPlayer />
               </div>
             </div>
-          </StoreProvider>
-        </AuthProvider>
+          </AuthProvider>
+        </StoreProvider>
       </body>
     </html>
   );

@@ -6,6 +6,7 @@ namespace MusicPlayer.Infrastructure.Data;
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
     public DbSet<Song> Songs { get; set; }
+    public DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -36,5 +37,17 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         modelBuilder.Entity<Song>()
             .Property(s => s.Genre)
             .HasMaxLength(100);
+
+        modelBuilder.Entity<User>()
+            .Property(u => u.Auth0Id)
+            .IsRequired();
+
+        modelBuilder.Entity<User>()
+            .Property(u => u.Email)
+            .IsRequired();
+
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Auth0Id)
+            .IsUnique();
     }
 }
