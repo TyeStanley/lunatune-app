@@ -33,7 +33,7 @@ public class SongsController(IMusicService musicService, IFileStorageService fil
   }
 
   [HttpGet("{id}/stream")]
-  public async Task<IActionResult> StreamSong(Guid id)
+  public async Task<IActionResult> GetStreamUrl(Guid id)
   {
     var song = await _musicService.GetSongByIdAsync(id);
     if (song == null)
@@ -43,12 +43,15 @@ public class SongsController(IMusicService musicService, IFileStorageService fil
 
     try
     {
-      var audioStream = await _fileStorageService.GetFileAsync(song.FilePath);
-      return File(audioStream, "audio/mpeg", enableRangeProcessing: true);
+      var blobUrl = await _fileStorageService.GetBlobUrlAsync(song.FilePath);
+      var sasToken = await _fileStorageService.GetSasTokenAsync(song.FilePath, TimeSpan.FromHours(1));
+      var streamUrl = $"{blobUrl}?{sasToken}";
+
+      return Ok(new { streamUrl });
     }
-    catch (Exception)
+    catch (Exception ex)
     {
-      return StatusCode(500, "Error streaming file");
+      return StatusCode(500, $"Error generating stream URL: {ex.Message}");
     }
   }
 }
