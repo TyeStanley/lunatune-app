@@ -10,9 +10,11 @@ public class AzureBlobStorageService : IFileStorageService
   private readonly BlobServiceClient _blobServiceClient;
   private readonly string _containerName;
   private readonly string _connectionString;
+  private readonly IConfiguration _configuration;
 
   public AzureBlobStorageService(IConfiguration configuration)
   {
+    _configuration = configuration;
     _connectionString = configuration.GetConnectionString("AzureStorage")
         ?? throw new ArgumentNullException("AzureStorage connection string is not configured");
     _containerName = configuration["AzureStorage:ContainerName"]
@@ -44,12 +46,15 @@ public class AzureBlobStorageService : IFileStorageService
       throw new FileNotFoundException($"File not found: {filePath}");
     }
 
+    var accountKey = _configuration["AzureStorage:AccountKey"]
+        ?? throw new InvalidOperationException("AccountKey not found in configuration");
+
     var sasBuilder = new BlobSasBuilder
     {
       BlobContainerName = _containerName,
       BlobName = filePath,
       Resource = "b",
-      StartsOn = DateTimeOffset.UtcNow.AddMinutes(-5), // Allow for clock skew
+      StartsOn = DateTimeOffset.UtcNow.AddMinutes(-5),
       ExpiresOn = DateTimeOffset.UtcNow.Add(expiryTime)
     };
 
@@ -58,9 +63,7 @@ public class AzureBlobStorageService : IFileStorageService
     var sasToken = sasBuilder.ToSasQueryParameters(
         new Azure.Storage.StorageSharedKeyCredential(
             _blobServiceClient.AccountName,
-            _connectionString.Split(';')
-                .FirstOrDefault(x => x.StartsWith("AccountKey="))?
-                .Split('=')[1] ?? throw new InvalidOperationException("AccountKey not found in connection string")
+            accountKey
         )
     ).ToString();
 

@@ -13,7 +13,11 @@ export const songApi = createApi({
       query: (id) => `/songs/${id}`,
       providesTags: (result, error, id) => [{ type: 'Song', id }],
     }),
+    getStreamUrl: builder.query<{ streamUrl: string }, string>({
+      query: (id) => `/songs/${id}/stream`,
+      providesTags: (result, error, id) => [{ type: 'Song', id }],
+    }),
   }),
 });
 
-export const { useGetSongsQuery, useGetSongQuery } = songApi;
+export const { useGetSongsQuery, useGetSongQuery, useGetStreamUrlQuery } = songApi;

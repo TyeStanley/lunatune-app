@@ -3,7 +3,6 @@
 import { useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { configureTokenApi } from '@/redux/api/baseApi';
-import { setAccessToken } from '@/redux/state/auth/authSlice';
 import { useCreateUserMutation, useGetCurrentUserQuery } from '@/redux/api/userApi';
 import { updateUser, clearUser } from '@/redux/state/user/userSlice';
 import { useAppDispatch } from '@/redux/hooks';
@@ -21,15 +20,10 @@ export default function UserManager() {
     skip: !isAuthenticated,
   });
 
-  // Fetch token and configure API
+  // Configure API
   useEffect(() => {
-    const fetchToken = async () => {
-      const token = await getAccessTokenSilently();
-      configureTokenApi(getAccessTokenSilently);
-      dispatch(setAccessToken(token));
-    };
-    fetchToken();
-  }, [getAccessTokenSilently, dispatch]);
+    configureTokenApi(getAccessTokenSilently);
+  }, [getAccessTokenSilently]);
 
   // Handle user creation
   useEffect(() => {

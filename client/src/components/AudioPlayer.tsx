@@ -9,23 +9,29 @@ import {
   clearSeekTime,
 } from '@/redux/state/playback-controls/playbackControlsSlice';
 import { skipForward } from '@/redux/state/queue/queueSlice';
-import { baseUrl } from '@/constants';
+import { useGetStreamUrlQuery } from '@/redux/api/songApi';
 
 export default function AudioPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const dispatch = useAppDispatch();
-  const accessToken = useAppSelector((state) => state.auth.accessToken);
   const { currentSong } = useAppSelector((state) => state.queue);
   const { isPlaying, isRepeating, volume, seekTime } = useAppSelector(
     (state) => state.playbackControls,
   );
+  const { data: streamData } = useGetStreamUrlQuery(currentSong?.id ?? '', {
+    skip: !currentSong?.id,
+  });
 
-  // Handle initial/new song load
+  // Set audio src and play when song changes
   useEffect(() => {
-    if (!audioRef.current || !currentSong || !accessToken) return;
+    if (!audioRef.current || !currentSong || !streamData?.streamUrl) return;
     const audio = audioRef.current;
-    const streamUrl = `${baseUrl}/songs/${currentSong.id}/stream?access_token=${accessToken}`;
-    audio.src = streamUrl;
+    audio.src = streamData.streamUrl;
+
+    // Play the song when it changes
+    if (isPlaying) {
+      audio.play().catch(() => dispatch(pause()));
+    }
 
     // Set the max duration of the new song for the slider
     const handleLoadedMetadata = () => {
@@ -34,7 +40,7 @@ export default function AudioPlayer() {
 
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
     return () => audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
-  }, [currentSong, dispatch, accessToken]);
+  }, [currentSong, streamData?.streamUrl, isPlaying, dispatch]);
 
   // Handle play/pause
   useEffect(() => {
