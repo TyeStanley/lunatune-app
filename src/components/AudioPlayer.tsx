@@ -22,25 +22,24 @@ export default function AudioPlayer() {
     skip: !currentSong?.id,
   });
 
-  // Set audio src and play when song changes
+  // Set audio src when song changes
   useEffect(() => {
     if (!audioRef.current || !currentSong || !streamData?.streamUrl) return;
     const audio = audioRef.current;
+
     audio.src = streamData.streamUrl;
 
-    // Play the song when it changes
-    if (isPlaying) {
-      audio.play().catch(() => dispatch(pause()));
-    }
-
-    // Set the max duration of the new song for the slider
     const handleLoadedMetadata = () => {
       dispatch(setMaxDuration(audio.duration));
+
+      if (isPlaying) {
+        audio.play().catch(() => dispatch(pause()));
+      }
     };
 
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
     return () => audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
-  }, [currentSong, streamData?.streamUrl, isPlaying, dispatch]);
+  }, [currentSong, streamData?.streamUrl, dispatch, isPlaying]);
 
   // Handle play/pause
   useEffect(() => {
