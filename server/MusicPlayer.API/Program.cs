@@ -3,6 +3,9 @@ using MusicPlayer.Core.Interfaces;
 using MusicPlayer.Infrastructure.Data;
 using MusicPlayer.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
+using MusicPlayer.API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +40,27 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
     });
 
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = 429;
+
+    options.AddFixedWindowLimiter("fixed", opt =>
+    {
+        opt.PermitLimit = 100;
+        opt.Window = TimeSpan.FromMinutes(1);
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 0;
+    });
+
+    options.AddFixedWindowLimiter("per-user", opt =>
+    {
+        opt.PermitLimit = 20;
+        opt.Window = TimeSpan.FromMinutes(1);
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 0;
+    });
+});
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -44,6 +68,8 @@ using (var scope = app.Services.CreateScope())
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     await DbSeeder.SeedDataAsync(context);
 }
+
+app.UseMiddleware<UserBlockingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
@@ -57,6 +83,7 @@ app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseStaticFiles();
+app.UseRateLimiter();
 app.MapControllers();
 
 app.Run();
