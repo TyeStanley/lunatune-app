@@ -27,7 +27,7 @@ public static class DbSeeder
     }
 
     // Read the seed data from JSON file
-    var jsonPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "songs.json");
+    var jsonPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "MusicPlayer.Infrastructure", "Data", "songs.json");
     var jsonContent = await File.ReadAllTextAsync(jsonPath);
     var songs = JsonSerializer.Deserialize<List<Song>>(jsonContent, _jsonOptions)
         ?? throw new InvalidOperationException("Failed to deserialize songs from JSON file");

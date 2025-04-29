@@ -15,7 +15,7 @@ namespace MusicPlayer.Infrastructure.Migrations
                 name: "Songs",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Artist = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Album = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
@@ -24,13 +24,36 @@ namespace MusicPlayer.Infrastructure.Migrations
                     DurationMs = table.Column<long>(type: "bigint", nullable: false),
                     AlbumArtUrl = table.Column<string>(type: "text", nullable: true),
                     IsFavorite = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Songs", x => x.Id);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    Auth0Id = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Picture = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Auth0Id",
+                table: "Users",
+                column: "Auth0Id",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -38,6 +61,9 @@ namespace MusicPlayer.Infrastructure.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Songs");
+
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }
