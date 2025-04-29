@@ -66,7 +66,8 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    await DbSeeder.SeedDataAsync(context);
+    var forceReseed = args.Contains("--force-reseed");
+    await DbSeeder.SeedDataAsync(context, forceReseed);
 }
 
 app.UseMiddleware<UserBlockingMiddleware>();

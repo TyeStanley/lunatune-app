@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using MusicPlayer.Core.Models;
 
@@ -5,55 +6,31 @@ namespace MusicPlayer.Infrastructure.Data;
 
 public static class DbSeeder
 {
-  public static async Task SeedDataAsync(ApplicationDbContext context)
+  private static readonly JsonSerializerOptions _jsonOptions = new()
   {
-    // Only seed if the database is empty
-    if (await context.Songs.AnyAsync())
+    PropertyNameCaseInsensitive = true
+  };
+
+  public static async Task SeedDataAsync(ApplicationDbContext context, bool forceReseed = false)
+  {
+    // Only seed if the database is empty or force reseed is true
+    if (!forceReseed && await context.Songs.AnyAsync())
     {
       return;
     }
 
-    List<Song> songs = [
-      new Song
-      {
-        Id = Guid.NewGuid(),
-        Title = "Pop Corporate",
-        Artist = "BlackTrendMusic",
-        Album = "Pop Corporate",
-        Genre = "Pop",
-        DurationMs = 119000,
-        FilePath = "pop-corporate.mp3",
-        AlbumArtUrl = "https://example.com/pop_corporate_album.jpg",
-        IsFavorite = false,
-        CreatedAt = DateTime.UtcNow
-      },
-      new Song
-      {
-        Id = Guid.NewGuid(),
-        Title = "Abstract Beauty",
-        Artist = "BoDleasons",
-        Album = "Moments of Inspiration",
-        Genre = "Instrumental",
-        DurationMs = 119000,
-        FilePath = "abstract-beauty.mp3",
-        AlbumArtUrl = "https://example.com/abstract_beauty_album.jpg",
-        IsFavorite = false,
-        CreatedAt = DateTime.UtcNow
-      },
-      new Song
-      {
-        Id = Guid.NewGuid(),
-        Title = "50 Berkeley Square",
-        Artist = "Nutmeg",
-        Album = "Ghosts (and Goolies)",
-        Genre = "Novelty",
-        DurationMs = 220000,
-        FilePath = "50-berkeley-square.mp3",
-        AlbumArtUrl = "https://example.com/50_berkeley_square.jpg",
-        IsFavorite = false,
-        CreatedAt = DateTime.UtcNow
-      }
-    ];
+    // If force reseed is true, clear existing data
+    if (forceReseed)
+    {
+      context.Songs.RemoveRange(context.Songs);
+      await context.SaveChangesAsync();
+    }
+
+    // Read the seed data from JSON file
+    var jsonPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "songs.json");
+    var jsonContent = await File.ReadAllTextAsync(jsonPath);
+    var songs = JsonSerializer.Deserialize<List<Song>>(jsonContent, _jsonOptions)
+        ?? throw new InvalidOperationException("Failed to deserialize songs from JSON file");
 
     await context.Songs.AddRangeAsync(songs);
     await context.SaveChangesAsync();

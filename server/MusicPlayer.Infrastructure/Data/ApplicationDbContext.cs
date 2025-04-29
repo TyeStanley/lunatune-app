@@ -12,42 +12,53 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<Song>()
-            .Property(s => s.Title)
-            .IsRequired()
-            .HasMaxLength(200);
+        // Song entity
+        modelBuilder.Entity<Song>(entity =>
+        {
+            entity.Property(s => s.Id)
+                .HasDefaultValueSql("gen_random_uuid()");
 
-        modelBuilder.Entity<Song>()
-            .Property(s => s.Artist)
-            .IsRequired()
-            .HasMaxLength(200);
+            entity.Property(s => s.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-        modelBuilder.Entity<Song>()
-            .Property(s => s.Album)
-            .HasMaxLength(200);
+            entity.Property(s => s.Title)
+                .IsRequired()
+                .HasMaxLength(200);
 
-        modelBuilder.Entity<Song>()
-            .Property(s => s.FilePath)
-            .IsRequired();
+            entity.Property(s => s.Artist)
+                .IsRequired()
+                .HasMaxLength(200);
 
-        modelBuilder.Entity<Song>()
-            .Property(s => s.DurationMs)
-            .IsRequired();
+            entity.Property(s => s.Album)
+                .HasMaxLength(200);
 
-        modelBuilder.Entity<Song>()
-            .Property(s => s.Genre)
-            .HasMaxLength(100);
+            entity.Property(s => s.FilePath)
+                .IsRequired();
 
-        modelBuilder.Entity<User>()
-            .Property(u => u.Auth0Id)
-            .IsRequired();
+            entity.Property(s => s.DurationMs)
+                .IsRequired();
 
-        modelBuilder.Entity<User>()
-            .Property(u => u.Email)
-            .IsRequired();
+            entity.Property(s => s.Genre)
+                .HasMaxLength(100);
+        });
 
-        modelBuilder.Entity<User>()
-            .HasIndex(u => u.Auth0Id)
-            .IsUnique();
+        // User entity
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.Property(u => u.Id)
+                .HasDefaultValueSql("gen_random_uuid()");
+
+            entity.Property(u => u.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            entity.Property(u => u.Auth0Id)
+                .IsRequired();
+
+            entity.Property(u => u.Email)
+                .IsRequired();
+
+            entity.HasIndex(u => u.Auth0Id)
+                .IsUnique();
+        });
     }
 }
