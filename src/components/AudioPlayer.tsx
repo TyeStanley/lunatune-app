@@ -13,6 +13,8 @@ import { useGetStreamUrlQuery } from '@/redux/api/songApi';
 
 export default function AudioPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const currentSongIdRef = useRef<string | null>(null);
+  const currentStreamUrlRef = useRef<string | null>(null);
   const dispatch = useAppDispatch();
   const { currentSong } = useAppSelector((state) => state.queue);
   const { isPlaying, isRepeating, volume, seekTime } = useAppSelector(
@@ -27,18 +29,25 @@ export default function AudioPlayer() {
     if (!audioRef.current || !currentSong || !streamData?.streamUrl) return;
     const audio = audioRef.current;
 
-    audio.src = streamData.streamUrl;
+    const isNewSong = currentSongIdRef.current !== currentSong.id;
+    const isNewStreamUrl = currentStreamUrlRef.current !== streamData.streamUrl;
 
-    const handleLoadedMetadata = () => {
-      dispatch(setMaxDuration(audio.duration));
+    if (isNewSong || isNewStreamUrl) {
+      currentSongIdRef.current = currentSong.id;
+      currentStreamUrlRef.current = streamData.streamUrl;
+      audio.src = streamData.streamUrl;
 
-      if (isPlaying) {
-        audio.play().catch(() => dispatch(pause()));
-      }
-    };
+      const handleLoadedMetadata = () => {
+        dispatch(setMaxDuration(audio.duration));
 
-    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
-    return () => audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        if (isPlaying) {
+          audio.play().catch(() => dispatch(pause()));
+        }
+      };
+
+      audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+      return () => audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+    }
   }, [currentSong, streamData?.streamUrl, dispatch, isPlaying]);
 
   // Handle play/pause
