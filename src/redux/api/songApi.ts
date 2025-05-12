@@ -1,12 +1,21 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseApiConfig } from './baseApi';
+import { Song } from '@/types/song';
 
 export const songApi = createApi({
   ...baseApiConfig,
   reducerPath: 'songApi',
   endpoints: (builder) => ({
-    getSongs: builder.query({
-      query: () => '/songs',
+    getSongs: builder.query<
+      { songs: Song[]; totalPages: number },
+      { searchTerm?: string; page?: number }
+    >({
+      query: ({ searchTerm = '', page = 1 } = {}) => {
+        const params = new URLSearchParams();
+        if (searchTerm) params.append('searchTerm', searchTerm);
+        if (page) params.append('page', page.toString());
+        return `/songs?${params.toString()}`;
+      },
       providesTags: ['Song'],
     }),
     getSong: builder.query({
