@@ -2,6 +2,7 @@
 
 import { useAuth } from '@/hooks/useAuth';
 import { DropdownMenu } from '../ui/DropdownMenu';
+import { useRouter } from 'next/navigation';
 
 export default function AuthButton({
   btnText,
@@ -11,8 +12,17 @@ export default function AuthButton({
   className?: string;
 }) {
   const { isAuthenticated, isLoading, login, signOut, user } = useAuth();
+  const router = useRouter();
 
   const dropdownMenuItems = [
+    {
+      label: 'Dashboard',
+      onClick: () => router.push('/dashboard'),
+    },
+    {
+      label: 'Find Songs',
+      onClick: () => router.push('/search'),
+    },
     {
       label: 'Log out',
       onClick: signOut,
