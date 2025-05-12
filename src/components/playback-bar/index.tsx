@@ -3,6 +3,7 @@
 import { useAppSelector } from '@/redux/hooks';
 import PlayerControls from './PlayerControls';
 import VolumeControl from './VolumeControl';
+import { Moon } from 'lucide-react';
 
 export default function PlaybackBar() {
   const { currentSong } = useAppSelector((state) => state.queue);
@@ -20,8 +21,8 @@ export default function PlaybackBar() {
       <div className="mx-auto flex max-w-screen-2xl items-center">
         {/* Left: Song Info */}
         <div className="flex w-[30%] items-center gap-4">
-          <div className="bg-background-lighter h-14 w-14 overflow-hidden rounded">
-            {/* Album art would go here */}
+          <div className="bg-background-lighter flex h-14 w-14 items-center justify-center overflow-hidden rounded">
+            <Moon size={50} className="text-primary" />
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-normal text-gray-200">{currentSong?.title}</span>

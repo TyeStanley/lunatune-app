@@ -1,6 +1,6 @@
 'use client';
 
-import { Play, Heart, Pause, Plus } from 'lucide-react';
+import { Play, Heart, Pause, Plus, Moon } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { pause, play } from '@/redux/state/playback-controls/playbackControlsSlice';
 import { getRelativeTime } from '@/lib/utils/date';
@@ -95,8 +95,10 @@ export default function TrackItem({
       </div>
 
       {/* Album Art */}
-      <div className="bg-background-lighter mr-4 h-10 w-10 flex-shrink-0 overflow-hidden rounded">
-        <div className="h-full w-full"></div>
+      <div className="mr-4 flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded">
+        <div className="bg-primary/20 flex h-9 w-9 items-center justify-center rounded">
+          <Moon size={22} className="text-primary" />
+        </div>
       </div>
 
       {/* Song Info */}

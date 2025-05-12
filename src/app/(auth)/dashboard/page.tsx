@@ -1,6 +1,5 @@
 'use client';
 
-import TrackItem from '@/components/TrackItem';
 import { useAuth } from '@/hooks/useAuth';
 
 function getGreeting(): string {
@@ -65,17 +64,6 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-      </section>
-      <section className="mt-5 rounded bg-gray-700">
-        <TrackItem
-          index={1}
-          id="1"
-          title="text"
-          artist="test"
-          album="hello"
-          dateAdded="398239"
-          durationMs={398329}
-        />
       </section>
     </div>
   );
