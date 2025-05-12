@@ -73,8 +73,12 @@ export default function TrackItem({
 
   return (
     <div
-      className="group hover:bg-background-lighter focus-within:from-background-lighter focus-within:to-primary/30 relative flex items-center rounded-md p-4 transition-all duration-300 ease-in-out focus-within:bg-gradient-to-l"
+      className={
+        `group hover:from-background-lighter hover:to-primary/30 focus-within:from-background-lighter focus-within:to-primary/30 relative flex items-center rounded-md p-4 transition-all duration-300 ease-in-out focus-within:bg-gradient-to-l hover:bg-gradient-to-l` +
+        (isCurrentSong ? ' from-background-lighter to-primary/30 bg-gradient-to-l' : '')
+      }
       tabIndex={0}
+      onDoubleClick={handlePlayClick}
     >
       {/* Track Number/Play Button Area */}
       <div className="mr-4 flex w-8 items-center justify-center">
