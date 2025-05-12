@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { useGetSongsQuery } from '@/redux/api/songApi';
 import { Song } from '@/types/song';
 import { Pagination } from '@/components/ui/Pagination';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 function useDebouncedValue<T>(value: T, delay: number) {
   const [debounced, setDebounced] = useState(value);
@@ -19,9 +20,22 @@ function useDebouncedValue<T>(value: T, delay: number) {
 }
 
 export default function SearchPage() {
-  const [searchQuery, setSearchQuery] = useState('');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const initialSearch = searchParams.get('search') || '';
+  const initialPage = parseInt(searchParams.get('page') || '1', 10);
+
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
+  const [currentPage, setCurrentPage] = useState(initialPage);
   const debouncedSearchQuery = useDebouncedValue(searchQuery, 400);
-  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (debouncedSearchQuery) params.set('search', debouncedSearchQuery);
+    if (currentPage > 1) params.set('page', String(currentPage));
+    router.replace(`?${params.toString()}`, { scroll: false });
+  }, [debouncedSearchQuery, currentPage, router]);
 
   const { data, isLoading, isFetching, error } = useGetSongsQuery({
     searchTerm: debouncedSearchQuery,
@@ -30,6 +44,7 @@ export default function SearchPage() {
 
   const songs = data?.songs || [];
   const totalPages = data?.totalPages || 1;
+  const pageSize = songs.length > 0 ? songs.length : 10;
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -40,7 +55,7 @@ export default function SearchPage() {
             <Search className="text-gray-400" size={20} />
             <input
               type="text"
-              placeholder="Search songs, artists, albums"
+              placeholder="Search songs, artists"
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -77,7 +92,7 @@ export default function SearchPage() {
             {data?.songs.map((song: Song, index: number) => (
               <TrackItem
                 key={song.id}
-                index={index}
+                index={(currentPage - 1) * pageSize + index}
                 id={song.id}
                 title={song.title}
                 artist={song.artist}
