@@ -1,6 +1,8 @@
 'use client';
 
 import { useAuth } from '@/hooks/useAuth';
+import Link from 'next/link';
+import { Search } from 'lucide-react';
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -32,21 +34,15 @@ export default function Dashboard() {
       {/* Recent Plays */}
       <section className="mb-12">
         <h2 className="mb-4 text-xl font-semibold text-gray-200">Recent Plays</h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {[1, 2].map((track) => (
-            <div
-              key={track}
-              className="bg-background-lighter group hover:bg-background-light flex cursor-pointer items-center gap-4 rounded-lg p-4 transition-colors"
-            >
-              <div className="bg-background-light h-12 w-12 rounded">
-                {/* Album art placeholder */}
-              </div>
-              <div>
-                <p className="group-hover:text-primary text-gray-200">Track {track}</p>
-                <p className="text-sm text-gray-400">Artist</p>
-              </div>
-            </div>
-          ))}
+        <div className="flex flex-col items-center justify-center py-12">
+          <p className="mb-4 text-lg text-gray-400">You haven&apos;t played any songs yet.</p>
+          <Link
+            href="/search"
+            className="bg-primary hover:bg-primary/90 inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-base font-semibold text-white shadow transition"
+          >
+            <Search size={20} />
+            Find songs
+          </Link>
         </div>
       </section>
 
