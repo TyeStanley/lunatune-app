@@ -72,65 +72,60 @@ export default function TrackItem({
   ];
 
   return (
-    <div
+    <tr
       className={
-        `group hover:from-background-lighter hover:to-primary/30 focus-within:from-background-lighter focus-within:to-primary/30 relative flex items-center rounded-md p-4 transition-all duration-300 ease-in-out focus-within:bg-gradient-to-l hover:bg-gradient-to-l` +
-        (isCurrentSong ? ' from-background-lighter to-primary/30 bg-gradient-to-l' : '')
+        `group hover:from-background-lighter/20 hover:to-primary/30 focus-within:from-background-lighter focus-within:to-primary/30 relative transition-all duration-300 ease-in-out focus-within:bg-gradient-to-l hover:bg-gradient-to-l` +
+        (isCurrentSong ? ' from-background-lighter/20 to-primary/30 bg-gradient-to-l' : '')
       }
       tabIndex={0}
       onDoubleClick={handlePlayClick}
     >
       {/* Track Number/Play Button Area */}
-      <div className="mr-4 flex w-8 items-center justify-center">
-        <span className="text-base text-gray-400 group-focus-within:hidden group-hover:hidden">
+      <td className="relative w-14 min-w-10 py-4 text-center">
+        <span className="text-base text-gray-400 group-focus-within:invisible group-hover:invisible">
           {index + 1}
         </span>
         <button
-          className="hover:text-primary hidden cursor-pointer text-gray-200 group-focus-within:block group-hover:block"
+          className="hover:text-primary invisible absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-200 group-focus-within:visible group-hover:visible"
           aria-label={isCurrentlyPlaying ? 'Pause' : 'Play'}
           onClick={handlePlayClick}
         >
           {isCurrentlyPlaying ? <Pause size={20} /> : <Play size={20} />}
         </button>
-      </div>
+      </td>
 
-      {/* Album Art */}
-      <div className="mr-4 flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded">
-        <div className="bg-primary/20 flex h-9 w-9 items-center justify-center rounded">
-          <Moon size={22} className="text-primary" />
+      {/* Album Art & Song Title & Artist Info */}
+      <td>
+        <div className="flex items-center gap-2">
+          <div className="bg-primary/20 flex h-9 w-9 items-center justify-center rounded">
+            <Moon size={22} className="text-primary" />
+          </div>
+
+          <div>
+            <h3 className="truncate text-base font-normal text-gray-200">{title}</h3>
+            <p className="truncate text-sm text-gray-400">{artist}</p>
+          </div>
         </div>
-      </div>
+      </td>
 
-      {/* Song Info */}
-      <div className="flex flex-1 items-center">
-        {/* Title and Artist */}
-        <div className="min-w-0 flex-1">
-          <h3 className="truncate text-base font-normal text-gray-200">{title}</h3>
-          <p className="truncate text-sm text-gray-400">{artist}</p>
-        </div>
+      {/* Album Name */}
+      <td className="hidden truncate text-sm text-gray-400 sm:table-cell">{album}</td>
 
-        {/* Album Name */}
-        <div className="hidden flex-1 px-4 text-sm text-gray-400 md:block">
-          <p className="truncate">{album}</p>
-        </div>
+      {/* Date Added */}
+      <td className="hidden truncate text-sm text-gray-400 md:table-cell">
+        {getRelativeTime(dateAdded)}
+      </td>
 
-        {/* Date Added */}
-        <div className="hidden w-32 text-sm text-gray-400 md:block">
-          <p className="truncate">{getRelativeTime(dateAdded)}</p>
-        </div>
-
-        {/* Action Buttons and Duration */}
-        <div className="flex items-center space-x-4">
-          <button
-            className="hover:text-primary invisible text-gray-400 group-focus-within:visible group-hover:visible"
-            aria-label="Like"
-          >
+      {/* Action Buttons and Duration */}
+      <td className="w-16 space-x-4 px-4">
+        <div className="flex items-center justify-end gap-2">
+          <button className="hover:text-primary invisible text-gray-400 group-focus-within:visible group-hover:visible">
             <Heart size={18} />
           </button>
           <span className="text-sm text-gray-400">{formatDuration(durationMs)}</span>
           <DropdownMenu items={menuItems} />
         </div>
-      </div>
-    </div>
+      </td>
+    </tr>
   );
 }

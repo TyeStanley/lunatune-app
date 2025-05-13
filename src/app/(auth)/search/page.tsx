@@ -1,7 +1,7 @@
 'use client';
 
 import TrackItem from '@/components/TrackItem';
-import { Search } from 'lucide-react';
+import { Clock, Search } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useGetSongsQuery } from '@/redux/api/songApi';
 import { Song } from '@/types/song';
@@ -78,37 +78,50 @@ export default function SearchPage() {
       </div>
 
       {/* Results List */}
-      <div className="bg-background-lighter rounded-lg">
-        {isLoading || isFetching ? (
-          <div className="flex items-center justify-center py-8">
-            <p className="text-gray-400">Loading songs...</p>
-          </div>
-        ) : error ? (
-          <div className="flex items-center justify-center py-8">
-            <p className="text-gray-400">Error loading songs</p>
-          </div>
-        ) : (
-          <>
-            {data?.songs.map((song: Song, index: number) => (
-              <TrackItem
-                key={song.id}
-                index={(currentPage - 1) * pageSize + index}
-                id={song.id}
-                title={song.title}
-                artist={song.artist}
-                album={song.album || ''}
-                dateAdded={song.createdAt || ''}
-                durationMs={song.durationMs}
-              />
-            ))}
-            {songs.length === 0 && (
-              <div className="flex items-center justify-center py-8">
-                <p className="text-gray-400">No songs found</p>
-              </div>
-            )}
-          </>
-        )}
-      </div>
+      {isLoading || isFetching ? (
+        <div className="flex items-center justify-center py-8">
+          <p className="text-gray-400">Loading songs...</p>
+        </div>
+      ) : error ? (
+        <div className="flex items-center justify-center py-8">
+          <p className="text-gray-400">Error loading songs</p>
+        </div>
+      ) : (
+        <>
+          <table className="w-full">
+            <thead className="border-b border-gray-700">
+              <tr className="text-left text-gray-400">
+                <th className="pb-2 text-center">#</th>
+                <th className="pb-2">Title</th>
+                <th className="hidden pb-2 sm:table-cell">Album</th>
+                <th className="hidden pb-2 md:table-cell">Date added</th>
+                <th className="flex justify-center pb-2">
+                  <Clock size={18} className="text-gray-400" />
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {data?.songs.map((song: Song, index: number) => (
+                <TrackItem
+                  key={song.id}
+                  index={(currentPage - 1) * pageSize + index}
+                  id={song.id}
+                  title={song.title}
+                  artist={song.artist}
+                  album={song.album || ''}
+                  dateAdded={song.createdAt || ''}
+                  durationMs={song.durationMs}
+                />
+              ))}
+            </tbody>
+          </table>
+          {songs.length === 0 && (
+            <div className="flex items-center justify-center py-8">
+              <p className="text-gray-400">No songs found</p>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
