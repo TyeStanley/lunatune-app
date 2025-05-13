@@ -3,6 +3,7 @@
 import { useAuth } from '@/hooks/useAuth';
 import { DropdownMenu } from '../ui/DropdownMenu';
 import { useRouter } from 'next/navigation';
+import { LayoutDashboard, Search, LogOut, LogIn, User } from 'lucide-react';
 
 export default function AuthButton({
   btnText,
@@ -17,14 +18,17 @@ export default function AuthButton({
   const dropdownMenuItems = [
     {
       label: 'Dashboard',
+      icon: <LayoutDashboard className="h-4 w-4" />,
       onClick: () => router.push('/dashboard'),
     },
     {
       label: 'Find Songs',
+      icon: <Search className="h-4 w-4" />,
       onClick: () => router.push('/search'),
     },
     {
       label: 'Log out',
+      icon: <LogOut className="h-4 w-4" />,
       onClick: signOut,
     },
   ];
@@ -41,7 +45,8 @@ export default function AuthButton({
     return (
       <DropdownMenu
         trigger={
-          <div className="bg-background-lighter hover:bg-primary/20 inline-flex cursor-pointer items-center rounded-md px-4 py-2 text-sm text-gray-200 transition-colors">
+          <div className="bg-background-lighter hover:bg-primary/20 inline-flex cursor-pointer items-center gap-2 rounded-md px-4 py-2 text-sm text-gray-200 transition-colors">
+            <User className="h-4 w-4" />
             {user.name || 'Account'}
           </div>
         }
@@ -55,6 +60,7 @@ export default function AuthButton({
       className={`bg-background-lighter hover:bg-primary/20 inline-flex cursor-pointer items-center gap-2 rounded-md px-4 py-2 text-sm text-gray-200 transition-colors ${className}`}
       onClick={() => login()}
     >
+      <LogIn className="h-4 w-4" />
       {btnText || 'Log in'}
     </button>
   );
