@@ -26,7 +26,27 @@ export const songApi = createApi({
       query: (id) => `/songs/${id}/stream`,
       providesTags: (result, error, id) => [{ type: 'Song', id }],
     }),
+    likeSong: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `/songs/${id}/like`,
+        method: 'POST',
+      }),
+      invalidatesTags: (result, error, id) => [{ type: 'Song', id }],
+    }),
+    unlikeSong: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `/songs/${id}/like`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (result, error, id) => [{ type: 'Song', id }],
+    }),
   }),
 });
 
-export const { useGetSongsQuery, useGetSongQuery, useGetStreamUrlQuery } = songApi;
+export const {
+  useGetSongsQuery,
+  useGetSongQuery,
+  useGetStreamUrlQuery,
+  useLikeSongMutation,
+  useUnlikeSongMutation,
+} = songApi;

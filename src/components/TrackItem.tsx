@@ -7,6 +7,8 @@ import { getRelativeTime } from '@/lib/utils/date';
 import { formatDuration } from '@/lib/utils/duration';
 import { playSong, addToUpcoming } from '@/redux/state/queue/queueSlice';
 import { DropdownMenu } from './ui/DropdownMenu';
+import { useLikeSongMutation, useUnlikeSongMutation } from '@/redux/api/songApi';
+import { useState, useEffect } from 'react';
 
 interface TrackItemProps {
   index: number;
@@ -16,6 +18,7 @@ interface TrackItemProps {
   album: string;
   dateAdded: string;
   durationMs: number;
+  isLiked: boolean;
 }
 
 export default function TrackItem({
@@ -26,12 +29,21 @@ export default function TrackItem({
   album,
   dateAdded,
   durationMs,
+  isLiked: initialIsLiked,
 }: TrackItemProps) {
   const dispatch = useAppDispatch();
   const { currentSong } = useAppSelector((state) => state.queue);
   const { isPlaying } = useAppSelector((state) => state.playbackControls);
+  const [likeSong, { isLoading: isLiking }] = useLikeSongMutation();
+  const [unlikeSong, { isLoading: isUnliking }] = useUnlikeSongMutation();
+  const [isLiked, setIsLiked] = useState(initialIsLiked);
   const isCurrentSong = currentSong?.id === id;
   const isCurrentlyPlaying = isCurrentSong && isPlaying;
+  const isMutating = isLiking || isUnliking;
+
+  useEffect(() => {
+    setIsLiked(initialIsLiked);
+  }, [initialIsLiked]);
 
   const handlePlayClick = () => {
     if (isCurrentSong) {
@@ -61,6 +73,21 @@ export default function TrackItem({
         duration: durationMs,
       }),
     );
+  };
+
+  const handleLikeClick = async () => {
+    setIsLiked(!isLiked);
+
+    try {
+      if (!isLiked) {
+        await likeSong(id).unwrap();
+      } else {
+        await unlikeSong(id).unwrap();
+      }
+    } catch (error) {
+      setIsLiked(isLiked);
+      console.error('Failed to update like status:', error);
+    }
   };
 
   const menuItems = [
@@ -119,8 +146,12 @@ export default function TrackItem({
       {/* Action Buttons and Duration */}
       <td className="w-16 space-x-4 px-4">
         <div className="flex items-center justify-end gap-2">
-          <button className="hover:text-primary invisible text-gray-400 group-focus-within:visible group-hover:visible">
-            <Heart size={18} />
+          <button
+            className={`hover:text-primary invisible cursor-pointer text-gray-400 group-focus-within:visible group-hover:visible ${isLiked ? 'text-primary' : ''}`}
+            onClick={handleLikeClick}
+            disabled={isMutating}
+          >
+            <Heart size={18} fill={isLiked ? 'currentColor' : 'none'} />
           </button>
           <span className="text-sm text-gray-400">{formatDuration(durationMs)}</span>
           <DropdownMenu items={menuItems} />

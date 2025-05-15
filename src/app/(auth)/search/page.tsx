@@ -111,6 +111,7 @@ export default function SearchPage() {
                   album={song.album || ''}
                   dateAdded={song.createdAt || ''}
                   durationMs={song.durationMs}
+                  isLiked={song.isLiked || false}
                 />
               ))}
             </tbody>
