@@ -7,6 +7,7 @@ import {
   setProgress,
   setMaxDuration,
   clearSeekTime,
+  play,
 } from '@/redux/state/playback-controls/playbackControlsSlice';
 import { skipForward } from '@/redux/state/queue/queueSlice';
 import { useGetStreamUrlQuery } from '@/redux/api/songApi';
@@ -38,12 +39,33 @@ export default function AudioPlayer() {
 
     const isNewSong = currentSongIdRef.current !== currentSong.id;
     const isNewStreamUrl = currentStreamUrlRef.current !== streamData.streamUrl;
+    const isFirstLoad = !currentAudioRef.current;
 
     if (isNewSong || isNewStreamUrl) {
       currentSongIdRef.current = currentSong.id;
       currentStreamUrlRef.current = streamData.streamUrl;
 
-      // Determine which audio element to use for the next song
+      // For first load, always use audioRef1
+      if (isFirstLoad) {
+        const audio1 = audioRef1.current;
+        if (!audio1) return;
+
+        audio1.src = streamData.streamUrl;
+        audio1.volume = volume;
+        currentAudioRef.current = audio1;
+        nextAudioRef.current = audioRef2.current;
+
+        const handleFirstLoad = () => {
+          dispatch(setMaxDuration(audio1.duration));
+          dispatch(setProgress(0));
+          dispatch(play());
+        };
+
+        audio1.addEventListener('loadedmetadata', handleFirstLoad);
+        return () => audio1.removeEventListener('loadedmetadata', handleFirstLoad);
+      }
+
+      // For subsequent loads, use the crossfade logic
       const currentAudio = currentAudioRef.current || audioRef1.current;
       const nextAudio = currentAudio === audioRef1.current ? audioRef2.current : audioRef1.current;
 
@@ -56,7 +78,11 @@ export default function AudioPlayer() {
         dispatch(setMaxDuration(nextAudio.duration));
         dispatch(setProgress(0));
 
-        if (isPlaying) {
+        // Get fresh isPlaying value
+        const shouldPlay = isPlaying;
+        console.log('isPlaying', shouldPlay);
+
+        if (shouldPlay) {
           // Start playing the next audio at volume 0
           nextAudio.play().catch(() => dispatch(pause()));
 
@@ -77,11 +103,19 @@ export default function AudioPlayer() {
           setTimeout(() => {
             clearInterval(fadeOutInterval);
             clearInterval(fadeInInterval);
-            currentAudio.currentTime = 0;
             currentAudioRef.current = nextAudio;
             nextAudioRef.current = currentAudio;
             setIsTransitioning(false);
           }, 1000);
+        } else {
+          // If paused, switch to next song silently and start playing
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+          currentAudioRef.current = nextAudio;
+          nextAudioRef.current = currentAudio;
+          nextAudio.volume = volume;
+          setIsTransitioning(false);
+          dispatch(play());
         }
       };
 

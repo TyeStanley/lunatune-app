@@ -76,7 +76,7 @@ export const playSong =
     dispatch(setCurrentSong(song));
 
     // Start playback
-    dispatch(play());
+    // dispatch(play());
   };
 
 export const skipForward = (): AppThunk => async (dispatch, getState) => {
@@ -93,7 +93,7 @@ export const skipForward = (): AppThunk => async (dispatch, getState) => {
 
   // Set it as current and start playing
   dispatch(setCurrentSong(nextSong));
-  dispatch(play());
+  // dispatch(play());
 };
 
 export const skipBack = (): AppThunk => async (dispatch, getState) => {
@@ -110,7 +110,7 @@ export const skipBack = (): AppThunk => async (dispatch, getState) => {
 
   // Set it as current and start playing
   dispatch(setCurrentSong(previousSong));
-  dispatch(play());
+  // dispatch(play());
 };
 
 export default queueSlice.reducer;
