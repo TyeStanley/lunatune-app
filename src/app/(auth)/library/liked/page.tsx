@@ -51,6 +51,7 @@ export default function LikedSongs() {
             album={song.album}
             dateAdded={song.dateAdded}
             durationMs={song.durationMs}
+            isLiked={true}
           />
         ))}
       </div>
