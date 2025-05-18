@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import {
-  pause,
   setProgress,
   setMaxDuration,
   clearSeekTime,
@@ -16,12 +15,12 @@ export default function AudioPlayer() {
   const audioRef1 = useRef<HTMLAudioElement>(null);
   const audioRef2 = useRef<HTMLAudioElement>(null);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
-  const nextAudioRef = useRef<HTMLAudioElement | null>(null);
   const currentSongIdRef = useRef<string | null>(null);
   const currentStreamUrlRef = useRef<string | null>(null);
   const dispatch = useAppDispatch();
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const { currentSong } = useAppSelector((state) => state.queue);
+  const [songEnded, setSongEnded] = useState(false);
+  const { currentSong, upcomingSongs } = useAppSelector((state) => state.queue);
   const { isPlaying, isRepeating, volume, seekTime } = useAppSelector(
     (state) => state.playbackControls,
   );
@@ -30,8 +29,6 @@ export default function AudioPlayer() {
   const { data: streamData } = useGetStreamUrlQuery(currentSong?.id ?? '', {
     skip: !currentSong?.id,
   });
-  console.log('audio1', audioRef1.current?.currentTime);
-  console.log('audio2', audioRef2.current?.currentTime);
 
   // Set audio src when song changes
   useEffect(() => {
@@ -53,7 +50,6 @@ export default function AudioPlayer() {
         audio1.src = streamData.streamUrl;
         audio1.volume = volume;
         currentAudioRef.current = audio1;
-        nextAudioRef.current = audioRef2.current;
 
         const handleFirstLoad = () => {
           dispatch(setMaxDuration(audio1.duration));
@@ -78,13 +74,9 @@ export default function AudioPlayer() {
         dispatch(setMaxDuration(nextAudio.duration));
         dispatch(setProgress(0));
 
-        // Get fresh isPlaying value
-        const shouldPlay = isPlaying;
-        console.log('isPlaying', shouldPlay);
-
-        if (shouldPlay) {
+        if (isPlaying && !songEnded) {
           // Start playing the next audio at volume 0
-          nextAudio.play().catch(() => dispatch(pause()));
+          nextAudio.play();
 
           // Crossfade between the two audio elements
           const fadeOutInterval = setInterval(() => {
@@ -103,26 +95,29 @@ export default function AudioPlayer() {
           setTimeout(() => {
             clearInterval(fadeOutInterval);
             clearInterval(fadeInInterval);
+            currentAudio.src = '';
             currentAudioRef.current = nextAudio;
-            nextAudioRef.current = currentAudio;
             setIsTransitioning(false);
+            setSongEnded(false);
           }, 1000);
         } else {
-          // If paused, switch to next song silently and start playing
-          currentAudio.pause();
-          currentAudio.currentTime = 0;
-          currentAudioRef.current = nextAudio;
-          nextAudioRef.current = currentAudio;
-          nextAudio.volume = volume;
-          setIsTransitioning(false);
-          dispatch(play());
+          // If paused or song ended, switch to next song silently and start playing
+          setTimeout(() => {
+            nextAudio.volume = volume;
+            nextAudio.play();
+            dispatch(play());
+            setIsTransitioning(false);
+            setSongEnded(false);
+            currentAudio.src = '';
+            currentAudioRef.current = nextAudio;
+          }, 1000);
         }
       };
 
       nextAudio.addEventListener('loadedmetadata', handleLoadedMetadata);
       return () => nextAudio.removeEventListener('loadedmetadata', handleLoadedMetadata);
     }
-  }, [currentSong, streamData?.streamUrl, dispatch, isPlaying, volume]);
+  }, [currentSong, streamData?.streamUrl, dispatch, isPlaying, volume, songEnded]);
 
   // Handle play/pause
   useEffect(() => {
@@ -131,7 +126,7 @@ export default function AudioPlayer() {
     const currentAudio = currentAudioRef.current || audioRef1.current;
 
     if (isPlaying) {
-      currentAudio.play().catch(() => dispatch(pause()));
+      currentAudio.play();
     } else {
       currentAudio.pause();
     }
@@ -181,6 +176,8 @@ export default function AudioPlayer() {
         currentAudio.play();
         return;
       }
+
+      setSongEnded(true);
       dispatch(skipForward());
     };
 
@@ -191,7 +188,7 @@ export default function AudioPlayer() {
       audio1.removeEventListener('ended', handleEnded);
       audio2.removeEventListener('ended', handleEnded);
     };
-  }, [isRepeating, dispatch]);
+  }, [isRepeating, dispatch, songEnded, upcomingSongs.length]);
 
   // Handle volume
   useEffect(() => {

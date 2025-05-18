@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppThunk } from '@/redux/store';
-import { play } from '../playback-controls/playbackControlsSlice';
+import { pause } from '../playback-controls/playbackControlsSlice';
 
 interface Song {
   id: string;
@@ -74,15 +74,15 @@ export const playSong =
 
     // Set the new song as current
     dispatch(setCurrentSong(song));
-
-    // Start playback
-    // dispatch(play());
   };
 
 export const skipForward = (): AppThunk => async (dispatch, getState) => {
   const { currentSong, upcomingSongs } = getState().queue;
 
-  if (!upcomingSongs.length || !currentSong) return;
+  if (!upcomingSongs.length || !currentSong) {
+    dispatch(pause()); // Pause playback if there are no next songs
+    return;
+  }
 
   // Add current song to played songs
   dispatch(addToPlayed(currentSong));
@@ -93,7 +93,6 @@ export const skipForward = (): AppThunk => async (dispatch, getState) => {
 
   // Set it as current and start playing
   dispatch(setCurrentSong(nextSong));
-  // dispatch(play());
 };
 
 export const skipBack = (): AppThunk => async (dispatch, getState) => {
@@ -110,7 +109,6 @@ export const skipBack = (): AppThunk => async (dispatch, getState) => {
 
   // Set it as current and start playing
   dispatch(setCurrentSong(previousSong));
-  // dispatch(play());
 };
 
 export default queueSlice.reducer;
