@@ -25,9 +25,9 @@ export default function VolumeControl() {
   };
 
   const getVolumeIcon = () => {
-    if (volume === 0) return <VolumeX className="h-5 w-5" />;
-    if (volume < 0.5) return <Volume1 className="h-5 w-5" />;
-    return <Volume2 className="h-5 w-5" />;
+    if (volume === 0) return <VolumeX className="size-5" />;
+    if (volume < 0.5) return <Volume1 className="size-5" />;
+    return <Volume2 className="size-5" />;
   };
 
   return (
