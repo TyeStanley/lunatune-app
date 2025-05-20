@@ -39,13 +39,15 @@ export default function TrackItem({
   const [likeSong, { isLoading: isLiking }] = useLikeSongMutation();
   const [unlikeSong, { isLoading: isUnliking }] = useUnlikeSongMutation();
   const [isLiked, setIsLiked] = useState(initialIsLiked);
+  const [optimisticLikeCount, setOptimisticLikeCount] = useState(likeCount);
   const isCurrentSong = currentSong?.id === id;
   const isCurrentlyPlaying = isCurrentSong && isPlaying;
   const isMutating = isLiking || isUnliking;
 
   useEffect(() => {
     setIsLiked(initialIsLiked);
-  }, [initialIsLiked]);
+    setOptimisticLikeCount(likeCount);
+  }, [initialIsLiked, likeCount]);
 
   const handlePlayClick = () => {
     if (isCurrentSong) {
@@ -78,7 +80,11 @@ export default function TrackItem({
   };
 
   const handleLikeClick = async () => {
+    const prevLiked = isLiked;
+    const prevCount = optimisticLikeCount;
+
     setIsLiked(!isLiked);
+    setOptimisticLikeCount((count) => count + (isLiked ? -1 : 1));
 
     try {
       if (!isLiked) {
@@ -87,7 +93,8 @@ export default function TrackItem({
         await unlikeSong(id).unwrap();
       }
     } catch (error) {
-      setIsLiked(isLiked);
+      setIsLiked(prevLiked);
+      setOptimisticLikeCount(prevCount);
       console.error('Failed to update like status:', error);
     }
   };
@@ -148,13 +155,25 @@ export default function TrackItem({
       {/* Like Count */}
       <td className="">
         <button
-          className={`hover:text-primary inline-flex cursor-pointer items-center justify-center gap-1 ${isLiked ? 'text-primary' : 'text-yellow-400'}`}
+          className={`inline-flex cursor-pointer items-center justify-center gap-1 ${
+            isMutating
+              ? 'cursor-not-allowed text-gray-400 opacity-60'
+              : isLiked
+                ? 'text-primary'
+                : 'text-yellow-400'
+          } hover:text-primary`}
           onClick={handleLikeClick}
           disabled={isMutating}
           aria-label={isLiked ? 'Unlike' : 'Like'}
         >
-          <Heart size={18} fill={isLiked ? 'currentColor' : 'none'} />
-          <span className="text-gray-200">{likeCount}</span>
+          <Heart
+            size={18}
+            fill={isLiked ? 'currentColor' : 'none'}
+            className={isMutating ? 'text-gray-400' : ''}
+          />
+          <span className={isMutating ? 'text-gray-400' : 'text-gray-200'}>
+            {optimisticLikeCount}
+          </span>
         </button>
       </td>
 
