@@ -69,6 +69,7 @@ export const songApi = createApi({
 export const {
   useGetSongsQuery,
   useGetLikedSongsQuery,
+  useGetPopularSongsQuery,
   useGetSongQuery,
   useGetStreamUrlQuery,
   useLikeSongMutation,

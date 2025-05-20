@@ -1,71 +1,72 @@
 'use client';
 
-import TrackItem from '@/components/TrackItem';
-import { Heart, Clock } from 'lucide-react';
+import { Heart } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { useGetLikedSongsQuery } from '@/redux/api/songApi';
+import { PageHeader } from '@/components/PageHeader';
+import { SongsList } from '@/components/SongsList';
+import { SearchInput } from '@/components/ui/SearchInput';
+import { Pagination } from '@/components/ui/Pagination';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function LikedSongs() {
-  const { data: likedSongs, isLoading, isError } = useGetLikedSongsQuery();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const initialSearch = searchParams.get('search') || '';
+  const initialPage = parseInt(searchParams.get('page') || '1', 10);
+
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
+  const [currentPage, setCurrentPage] = useState(initialPage);
+  const debouncedSearchQuery = useDebouncedValue(searchQuery, 400);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (debouncedSearchQuery) params.set('search', debouncedSearchQuery);
+    if (currentPage > 1) params.set('page', String(currentPage));
+    router.replace(`?${params.toString()}`, { scroll: false });
+  }, [debouncedSearchQuery, currentPage, router]);
+
+  const { data, isLoading, isFetching, error } = useGetLikedSongsQuery({
+    searchTerm: debouncedSearchQuery,
+    page: currentPage,
+  });
+
+  const songs = data?.songs || [];
+  const totalPages = data?.totalPages || 1;
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* Header */}
-      <div className="mb-12">
-        <div className="bg-background-lighter/20 rounded-xl border border-white/5 p-6 backdrop-blur-md">
-          <div className="flex items-center gap-4">
-            <Heart size={28} className="text-primary" />
-            <h1 className="text-2xl font-semibold text-gray-200">Your Liked Songs</h1>
-          </div>
-        </div>
-      </div>
+      <PageHeader icon={Heart} title="Your Liked Songs" />
 
-      {/* Songs List */}
-      <section>
-        <div className="bg-background-lighter/20 rounded-lg border border-white/5 p-6 backdrop-blur-md">
-          {isLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <p className="text-gray-400">Loading your liked songs...</p>
-            </div>
-          ) : isError ? (
-            <div className="flex items-center justify-center py-8">
-              <p className="text-red-400">Failed to load liked songs.</p>
-            </div>
-          ) : likedSongs && likedSongs.length > 0 ? (
-            <table className="w-full">
-              <thead className="border-b border-gray-700">
-                <tr className="text-left text-gray-400">
-                  <th className="pb-2 text-center">#</th>
-                  <th className="pb-2">Title</th>
-                  <th className="hidden pb-2 sm:table-cell">Album</th>
-                  <th className="hidden pb-2 md:table-cell">Date added</th>
-                  <th className="flex justify-center pb-2">
-                    <Clock size={18} className="text-gray-400" />
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {likedSongs.map((song, index) => (
-                  <TrackItem
-                    key={song.id}
-                    index={index}
-                    id={song.id}
-                    title={song.title}
-                    artist={song.artist}
-                    album={song.album ?? ''}
-                    dateAdded={song.createdAt}
-                    durationMs={song.durationMs}
-                    isLiked={song.isLiked ?? true}
-                  />
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <div className="flex items-center justify-center py-8">
-              <p className="text-gray-400">You haven&#39;t liked any songs yet.</p>
-            </div>
+      <div className="bg-background-lighter/20 rounded-lg border border-white/5 p-6 backdrop-blur-md">
+        <div className="mb-4 flex flex-col items-stretch gap-4 md:mb-8 md:flex-row md:items-center md:justify-between">
+          <SearchInput
+            value={searchQuery}
+            onChange={(value) => {
+              setSearchQuery(value);
+              setCurrentPage(1);
+            }}
+            placeholder="Search your liked songs"
+          />
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
           )}
         </div>
-      </section>
+        <SongsList
+          songs={songs}
+          currentPage={currentPage}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          error={error as Error}
+          emptyMessage="You haven't liked any songs yet."
+        />
+      </div>
     </div>
   );
 }
