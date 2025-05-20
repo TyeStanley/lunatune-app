@@ -45,7 +45,8 @@ export function SongsList({
           <th className="pb-2">Title</th>
           <th className="hidden pb-2 sm:table-cell">Album</th>
           <th className="hidden pb-2 md:table-cell">Date added</th>
-          <th className="flex justify-center pb-2">
+          <th className="pb-2">Likes</th>
+          <th className="ml-3 flex">
             <Clock size={18} className="text-gray-400" />
           </th>
         </tr>
@@ -62,6 +63,7 @@ export function SongsList({
             dateAdded={song.createdAt || ''}
             durationMs={song.durationMs}
             isLiked={song.isLiked || false}
+            likeCount={song.likeCount ?? 0}
           />
         ))}
       </tbody>

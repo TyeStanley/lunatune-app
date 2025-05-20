@@ -19,6 +19,7 @@ interface TrackItemProps {
   dateAdded: string;
   durationMs: number;
   isLiked: boolean;
+  likeCount: number;
 }
 
 export default function TrackItem({
@@ -30,6 +31,7 @@ export default function TrackItem({
   dateAdded,
   durationMs,
   isLiked: initialIsLiked,
+  likeCount,
 }: TrackItemProps) {
   const dispatch = useAppDispatch();
   const { currentSong } = useAppSelector((state) => state.queue);
@@ -143,16 +145,22 @@ export default function TrackItem({
         {getRelativeTime(dateAdded)}
       </td>
 
+      {/* Like Count */}
+      <td className="">
+        <button
+          className={`hover:text-primary inline-flex cursor-pointer items-center justify-center gap-1 ${isLiked ? 'text-primary' : 'text-yellow-400'}`}
+          onClick={handleLikeClick}
+          disabled={isMutating}
+          aria-label={isLiked ? 'Unlike' : 'Like'}
+        >
+          <Heart size={18} fill={isLiked ? 'currentColor' : 'none'} />
+          <span className="text-gray-200">{likeCount}</span>
+        </button>
+      </td>
+
       {/* Action Buttons and Duration */}
-      <td className="w-16 space-x-4 px-4">
+      <td className="w-10 space-x-4 px-2">
         <div className="flex items-center justify-end gap-2">
-          <button
-            className={`hover:text-primary invisible cursor-pointer text-gray-400 group-focus-within:visible group-hover:visible ${isLiked ? 'text-primary' : ''}`}
-            onClick={handleLikeClick}
-            disabled={isMutating}
-          >
-            <Heart size={18} fill={isLiked ? 'currentColor' : 'none'} />
-          </button>
           <span className="text-sm text-gray-400">{formatDuration(durationMs)}</span>
           <DropdownMenu items={menuItems} />
         </div>
