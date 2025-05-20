@@ -54,14 +54,12 @@ export const songApi = createApi({
         url: `/songs/${id}/like`,
         method: 'POST',
       }),
-      invalidatesTags: (result, error, id) => [{ type: 'Song', id }],
     }),
     unlikeSong: builder.mutation<void, string>({
       query: (id) => ({
         url: `/songs/${id}/like`,
         method: 'DELETE',
       }),
-      invalidatesTags: (result, error, id) => [{ type: 'Song', id }],
     }),
   }),
 });
