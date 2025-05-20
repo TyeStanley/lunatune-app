@@ -18,6 +18,10 @@ export const songApi = createApi({
       },
       providesTags: ['Song'],
     }),
+    getLikedSongs: builder.query<Song[], void>({
+      query: () => '/songs/liked',
+      providesTags: ['Song'],
+    }),
     getSong: builder.query({
       query: (id) => `/songs/${id}`,
       providesTags: (result, error, id) => [{ type: 'Song', id }],
@@ -45,6 +49,7 @@ export const songApi = createApi({
 
 export const {
   useGetSongsQuery,
+  useGetLikedSongsQuery,
   useGetSongQuery,
   useGetStreamUrlQuery,
   useLikeSongMutation,

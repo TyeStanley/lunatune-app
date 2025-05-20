@@ -48,81 +48,96 @@ export default function SearchPage() {
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-4 flex flex-col items-stretch gap-4 md:mb-8 md:flex-row md:items-center md:justify-between">
-        {/* Search Input */}
-        <div className="max-w-md flex-1">
-          <div className="bg-background-lighter flex items-center gap-3 rounded-lg px-4 py-2">
-            <Search className="text-gray-400" size={20} />
-            <input
-              type="text"
-              placeholder="Search songs, artists"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="bg-background-lighter flex-1 text-gray-200 placeholder-gray-400 focus:outline-none"
-            />
+      {/* Header */}
+      <div className="mb-12">
+        <div className="bg-background-lighter/20 rounded-xl border border-white/5 p-6 backdrop-blur-md">
+          <div className="flex items-center gap-4">
+            <Search size={28} className="text-primary" />
+            <h1 className="text-2xl font-semibold text-gray-200">Search Music</h1>
           </div>
         </div>
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="w-full md:w-auto">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
-          </div>
-        )}
       </div>
 
-      {/* Results List */}
-      {isLoading || isFetching ? (
-        <div className="flex items-center justify-center py-8">
-          <p className="text-gray-400">Loading songs...</p>
-        </div>
-      ) : error ? (
-        <div className="flex items-center justify-center py-8">
-          <p className="text-gray-400">Error loading songs</p>
-        </div>
-      ) : (
-        <>
-          <table className="w-full">
-            <thead className="border-b border-gray-700">
-              <tr className="text-left text-gray-400">
-                <th className="pb-2 text-center">#</th>
-                <th className="pb-2">Title</th>
-                <th className="hidden pb-2 sm:table-cell">Album</th>
-                <th className="hidden pb-2 md:table-cell">Date added</th>
-                <th className="flex justify-center pb-2">
-                  <Clock size={18} className="text-gray-400" />
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {data?.songs.map((song: Song, index: number) => (
-                <TrackItem
-                  key={song.id}
-                  index={(currentPage - 1) * pageSize + index}
-                  id={song.id}
-                  title={song.title}
-                  artist={song.artist}
-                  album={song.album || ''}
-                  dateAdded={song.createdAt || ''}
-                  durationMs={song.durationMs}
-                  isLiked={song.isLiked || false}
+      {/* Search Input, Pagination, and Results List */}
+      <section>
+        <div className="bg-background-lighter/20 rounded-lg border border-white/5 p-6 backdrop-blur-md">
+          <div className="mb-4 flex flex-col items-stretch gap-4 md:mb-8 md:flex-row md:items-center md:justify-between">
+            {/* Search Input */}
+            <div className="max-w-md flex-1">
+              <div className="bg-background-lighter flex items-center gap-3 rounded-lg px-4 py-2">
+                <Search className="text-gray-400" size={20} />
+                <input
+                  type="text"
+                  placeholder="Search songs, artists"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="bg-background-lighter flex-1 text-gray-200 placeholder-gray-400 focus:outline-none"
                 />
-              ))}
-            </tbody>
-          </table>
-          {songs.length === 0 && (
-            <div className="flex items-center justify-center py-8">
-              <p className="text-gray-400">No songs found</p>
+              </div>
             </div>
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="w-full md:w-auto">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Results List */}
+          {isLoading || isFetching ? (
+            <div className="flex items-center justify-center py-8">
+              <p className="text-gray-400">Loading songs...</p>
+            </div>
+          ) : error ? (
+            <div className="flex items-center justify-center py-8">
+              <p className="text-gray-400">Error loading songs</p>
+            </div>
+          ) : (
+            <>
+              <table className="w-full">
+                <thead className="border-b border-gray-700">
+                  <tr className="text-left text-gray-400">
+                    <th className="pb-2 text-center">#</th>
+                    <th className="pb-2">Title</th>
+                    <th className="hidden pb-2 sm:table-cell">Album</th>
+                    <th className="hidden pb-2 md:table-cell">Date added</th>
+                    <th className="flex justify-center pb-2">
+                      <Clock size={18} className="text-gray-400" />
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data?.songs.map((song: Song, index: number) => (
+                    <TrackItem
+                      key={song.id}
+                      index={(currentPage - 1) * pageSize + index}
+                      id={song.id}
+                      title={song.title}
+                      artist={song.artist}
+                      album={song.album || ''}
+                      dateAdded={song.createdAt || ''}
+                      durationMs={song.durationMs}
+                      isLiked={song.isLiked || false}
+                    />
+                  ))}
+                </tbody>
+              </table>
+              {songs.length === 0 && (
+                <div className="flex items-center justify-center py-8">
+                  <p className="text-gray-400">No songs found</p>
+                </div>
+              )}
+            </>
           )}
-        </>
-      )}
+        </div>
+      </section>
     </div>
   );
 }
