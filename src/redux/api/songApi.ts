@@ -18,8 +18,27 @@ export const songApi = createApi({
       },
       providesTags: ['Song'],
     }),
-    getLikedSongs: builder.query<Song[], void>({
-      query: () => '/songs/liked',
+    getLikedSongs: builder.query<
+      { songs: Song[]; totalPages: number },
+      { searchTerm?: string; page?: number }
+    >({
+      query: ({ page = 1 } = {}) => {
+        const params = new URLSearchParams();
+        if (page) params.append('page', page.toString());
+        return `/songs/liked?${params.toString()}`;
+      },
+      providesTags: ['Song'],
+    }),
+    getPopularSongs: builder.query<
+      { songs: Song[]; totalPages: number },
+      { searchTerm?: string; page?: number }
+    >({
+      query: ({ searchTerm = '', page = 1 } = {}) => {
+        const params = new URLSearchParams();
+        if (searchTerm) params.append('searchTerm', searchTerm);
+        if (page) params.append('page', page.toString());
+        return `/songs/popular?${params.toString()}`;
+      },
       providesTags: ['Song'],
     }),
     getSong: builder.query({
