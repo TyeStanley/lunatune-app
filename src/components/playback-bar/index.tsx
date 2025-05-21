@@ -17,7 +17,7 @@ export default function PlaybackBar() {
     <footer
       className={`${
         currentSong
-          ? 'border-background-lighter bg-background fixed bottom-0 w-full border-t px-4 py-3'
+          ? 'border-background-lighter bg-background fixed bottom-0 z-50 w-full border-t px-4 py-3'
           : 'hidden'
       }`}
     >

@@ -6,6 +6,7 @@ import PlaybackBar from '@/components/playback-bar';
 import AudioPlayer from '@/components/AudioPlayer';
 import AuthProvider from '@/providers/AuthProvider';
 import UserManager from '@/components/UserManager';
+import SleepTimerManager from '@/components/sleep-timer/SleepTimerManager';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -39,6 +40,7 @@ export default function RootLayout({
                 {children}
                 <PlaybackBar />
                 <AudioPlayer />
+                <SleepTimerManager />
               </div>
             </div>
           </AuthProvider>

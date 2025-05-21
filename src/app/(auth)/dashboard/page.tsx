@@ -6,6 +6,7 @@ import { dashboardOptions } from '@/constants';
 import DashboardOption from '@/components/DashboardOption';
 import { useEffect, useState } from 'react';
 import { useAppSelector } from '@/redux/hooks';
+import SleepTimerModal from '@/components/sleep-timer/SleepTimerModal';
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -44,6 +45,7 @@ export default function Dashboard() {
   const [currentDate, setCurrentDate] = useState(getCurrentDate());
   const { currentSong } = useAppSelector((state) => state.queue);
   const { isPlaying } = useAppSelector((state) => state.playbackControls);
+  const [isSleepTimerOpen, setIsSleepTimerOpen] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -53,6 +55,11 @@ export default function Dashboard() {
 
     return () => clearInterval(timer);
   }, []);
+
+  const handleSleepTimerClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsSleepTimerOpen(true);
+  };
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -113,12 +120,15 @@ export default function Dashboard() {
                 key={option.text}
                 icon={option.icon}
                 text={option.text}
-                href={option.href}
+                href={option.text === 'Sleep Timer' ? '#' : option.href}
+                onClick={option.text === 'Sleep Timer' ? handleSleepTimerClick : undefined}
               />
             ))}
           </div>
         </div>
       </section>
+
+      <SleepTimerModal isOpen={isSleepTimerOpen} onClose={() => setIsSleepTimerOpen(false)} />
     </div>
   );
 }

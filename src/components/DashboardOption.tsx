@@ -5,12 +5,14 @@ interface DashboardOptionProps {
   icon: LucideIcon;
   text: string;
   href: string;
+  onClick?: (e: React.MouseEvent) => void;
 }
 
-export default function DashboardOption({ icon: Icon, text, href }: DashboardOptionProps) {
+export default function DashboardOption({ icon: Icon, text, href, onClick }: DashboardOptionProps) {
   return (
     <Link
       href={href}
+      onClick={onClick}
       className="group hover:bg-background-light/40 bg-background-lighter/30 flex aspect-square cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border border-white/5 p-6 backdrop-blur-sm transition-all duration-300 hover:border-white/10"
     >
       <div className="bg-background-light/40 flex h-16 w-16 items-center justify-center rounded-full border border-white/5 backdrop-blur-sm sm:h-20 sm:w-20 lg:h-24 lg:w-24">

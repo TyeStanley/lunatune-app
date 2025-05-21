@@ -9,7 +9,7 @@ export default function AppNav() {
   const isDesktop = useTauriCheck();
 
   return (
-    <nav className="border-background-lighter relative border-b">
+    <nav className="border-background-lighter relative z-50 border-b">
       <div className="from-background-light/80 via-background/60 to-primary/10 absolute inset-0 z-0 bg-gradient-to-r" />
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between gap-8">

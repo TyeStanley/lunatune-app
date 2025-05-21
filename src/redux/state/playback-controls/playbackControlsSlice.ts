@@ -8,6 +8,11 @@ interface PlaybackControlsState {
   isShuffled: boolean;
   isRepeating: boolean;
   seekTime: number | null;
+  sleepTimer: {
+    isActive: boolean;
+    endTime: number | null;
+    duration: number | null;
+  };
 }
 
 const initialState: PlaybackControlsState = {
@@ -18,6 +23,11 @@ const initialState: PlaybackControlsState = {
   isShuffled: false,
   isRepeating: false,
   seekTime: null,
+  sleepTimer: {
+    isActive: false,
+    endTime: null,
+    duration: null,
+  },
 };
 
 export const playbackControlsSlice = createSlice({
@@ -51,6 +61,21 @@ export const playbackControlsSlice = createSlice({
     clearSeekTime: (state) => {
       state.seekTime = null;
     },
+    setSleepTimer: (state, action: PayloadAction<number>) => {
+      const now = Date.now();
+      state.sleepTimer = {
+        isActive: true,
+        endTime: now + action.payload * 60 * 1000,
+        duration: action.payload,
+      };
+    },
+    clearSleepTimer: (state) => {
+      state.sleepTimer = {
+        isActive: false,
+        endTime: null,
+        duration: null,
+      };
+    },
   },
 });
 
@@ -64,6 +89,8 @@ export const {
   toggleShuffle,
   setSeekTime,
   clearSeekTime,
+  setSleepTimer,
+  clearSleepTimer,
 } = playbackControlsSlice.actions;
 
 export default playbackControlsSlice.reducer;
