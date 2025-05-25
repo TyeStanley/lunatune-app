@@ -10,12 +10,14 @@ import { DropdownMenu } from './ui/DropdownMenu';
 import { useLikeSongMutation, useUnlikeSongMutation } from '@/redux/api/songApi';
 import { useState, useEffect } from 'react';
 import { Song } from '@/types/song';
+
 interface TrackItemProps {
   index: number;
   song: Song;
+  useLocalStorage?: boolean;
 }
 
-export default function TrackItem({ index, song }: TrackItemProps) {
+export default function TrackItem({ index, song, useLocalStorage = false }: TrackItemProps) {
   const dispatch = useAppDispatch();
   const { currentSong } = useAppSelector((state) => state.queue);
   const { isPlaying } = useAppSelector((state) => state.playbackControls);
@@ -122,29 +124,30 @@ export default function TrackItem({ index, song }: TrackItemProps) {
       </td>
 
       {/* Like Count */}
-      <td className="">
-        <button
-          className={`inline-flex cursor-pointer items-center justify-center gap-1 ${
-            isMutating
-              ? 'cursor-not-allowed text-gray-400 opacity-60'
-              : isLiked
-                ? 'text-primary'
-                : 'text-yellow-400'
-          } hover:text-primary`}
-          onClick={handleLikeClick}
-          disabled={isMutating}
-          aria-label={isLiked ? 'Unlike' : 'Like'}
-        >
-          <Heart
-            size={18}
-            fill={isLiked ? 'currentColor' : 'none'}
-            className={isMutating ? 'text-gray-400' : ''}
-          />
-          <span className={isMutating ? 'text-gray-400' : 'text-gray-200'}>
-            {optimisticLikeCount}
-          </span>
-        </button>
-      </td>
+      {!useLocalStorage && (
+        <td className="">
+          <button
+            className={`inline-flex cursor-pointer items-center justify-center gap-1 ${
+              isMutating
+                ? 'cursor-not-allowed text-gray-400 opacity-60'
+                : isLiked
+                  ? 'text-primary'
+                  : 'text-yellow-400'
+            } hover:text-primary`}
+            onClick={handleLikeClick}
+            disabled={isMutating}
+          >
+            <Heart
+              size={18}
+              fill={isLiked ? 'currentColor' : 'none'}
+              className={isMutating ? 'text-gray-400' : ''}
+            />
+            <span className={isMutating ? 'text-gray-400' : 'text-gray-200'}>
+              {optimisticLikeCount}
+            </span>
+          </button>
+        </td>
+      )}
 
       {/* Action Buttons and Duration */}
       <td className="w-10 space-x-4 px-2">

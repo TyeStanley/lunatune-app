@@ -9,6 +9,7 @@ interface SongsListProps {
   isFetching: boolean;
   error?: Error;
   emptyMessage?: string;
+  useLocalStorage?: boolean;
 }
 
 export function SongsList({
@@ -18,6 +19,7 @@ export function SongsList({
   isFetching,
   error,
   emptyMessage = 'No songs found',
+  useLocalStorage = false,
 }: SongsListProps) {
   const pageSize = songs.length > 0 ? songs.length : 10;
 
@@ -45,7 +47,7 @@ export function SongsList({
           <th className="pb-2">Title</th>
           <th className="hidden pb-2 sm:table-cell">Album</th>
           <th className="hidden pb-2 md:table-cell">Date added</th>
-          <th className="pb-2">Likes</th>
+          {!useLocalStorage && <th className="pb-2">Likes</th>}
           <th className="ml-3 flex">
             <Clock size={18} className="text-gray-400" />
           </th>
@@ -53,7 +55,12 @@ export function SongsList({
       </thead>
       <tbody>
         {songs.map((song: Song, index: number) => (
-          <TrackItem key={song.id} index={(currentPage - 1) * pageSize + index} song={song} />
+          <TrackItem
+            key={song.id}
+            index={(currentPage - 1) * pageSize + index}
+            song={song}
+            useLocalStorage
+          />
         ))}
       </tbody>
     </table>

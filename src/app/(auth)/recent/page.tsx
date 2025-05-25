@@ -92,6 +92,7 @@ export default function RecentPage() {
           isFetching={false}
           error={undefined}
           emptyMessage="No recently played songs"
+          useLocalStorage={true}
         />
       </div>
     </div>
