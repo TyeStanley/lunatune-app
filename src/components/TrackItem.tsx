@@ -9,45 +9,28 @@ import { playSong, addToUpcoming } from '@/redux/state/queue/queueSlice';
 import { DropdownMenu } from './ui/DropdownMenu';
 import { useLikeSongMutation, useUnlikeSongMutation } from '@/redux/api/songApi';
 import { useState, useEffect } from 'react';
-
+import { Song } from '@/types/song';
 interface TrackItemProps {
   index: number;
-  id: string;
-  title: string;
-  artist: string;
-  album: string;
-  dateAdded: string;
-  durationMs: number;
-  isLiked: boolean;
-  likeCount: number;
+  song: Song;
 }
 
-export default function TrackItem({
-  index,
-  id,
-  title,
-  artist,
-  album,
-  dateAdded,
-  durationMs,
-  isLiked: initialIsLiked,
-  likeCount,
-}: TrackItemProps) {
+export default function TrackItem({ index, song }: TrackItemProps) {
   const dispatch = useAppDispatch();
   const { currentSong } = useAppSelector((state) => state.queue);
   const { isPlaying } = useAppSelector((state) => state.playbackControls);
   const [likeSong, { isLoading: isLiking }] = useLikeSongMutation();
   const [unlikeSong, { isLoading: isUnliking }] = useUnlikeSongMutation();
-  const [isLiked, setIsLiked] = useState(initialIsLiked);
-  const [optimisticLikeCount, setOptimisticLikeCount] = useState(likeCount);
-  const isCurrentSong = currentSong?.id === id;
+  const [isLiked, setIsLiked] = useState(song.isLiked);
+  const [optimisticLikeCount, setOptimisticLikeCount] = useState(song.likeCount);
+  const isCurrentSong = currentSong?.id === song.id;
   const isCurrentlyPlaying = isCurrentSong && isPlaying;
   const isMutating = isLiking || isUnliking;
 
   useEffect(() => {
-    setIsLiked(initialIsLiked);
-    setOptimisticLikeCount(likeCount);
-  }, [initialIsLiked, likeCount]);
+    setIsLiked(song.isLiked);
+    setOptimisticLikeCount(song.likeCount);
+  }, [song.isLiked, song.likeCount]);
 
   const handlePlayClick = () => {
     if (isCurrentSong) {
@@ -57,26 +40,12 @@ export default function TrackItem({
         dispatch(play());
       }
     } else {
-      dispatch(
-        playSong({
-          id,
-          title,
-          artist,
-          duration: durationMs,
-        }),
-      );
+      dispatch(playSong(song));
     }
   };
 
   const handleAddToQueue = () => {
-    dispatch(
-      addToUpcoming({
-        id,
-        title,
-        artist,
-        duration: durationMs,
-      }),
-    );
+    dispatch(addToUpcoming(song));
   };
 
   const handleLikeClick = async () => {
@@ -88,9 +57,9 @@ export default function TrackItem({
 
     try {
       if (!isLiked) {
-        await likeSong(id).unwrap();
+        await likeSong(song.id).unwrap();
       } else {
-        await unlikeSong(id).unwrap();
+        await unlikeSong(song.id).unwrap();
       }
     } catch (error) {
       setIsLiked(prevLiked);
@@ -138,18 +107,18 @@ export default function TrackItem({
           </div>
 
           <div>
-            <h3 className="truncate text-base font-normal text-gray-200">{title}</h3>
-            <p className="truncate text-sm text-gray-400">{artist}</p>
+            <h3 className="truncate text-base font-normal text-gray-200">{song.title}</h3>
+            <p className="truncate text-sm text-gray-400">{song.artist}</p>
           </div>
         </div>
       </td>
 
       {/* Album Name */}
-      <td className="hidden truncate text-sm text-gray-400 sm:table-cell">{album}</td>
+      <td className="hidden truncate text-sm text-gray-400 sm:table-cell">{song.album}</td>
 
       {/* Date Added */}
       <td className="hidden truncate text-sm text-gray-400 md:table-cell">
-        {getRelativeTime(dateAdded)}
+        {getRelativeTime(song.createdAt)}
       </td>
 
       {/* Like Count */}
@@ -180,7 +149,7 @@ export default function TrackItem({
       {/* Action Buttons and Duration */}
       <td className="w-10 space-x-4 px-2">
         <div className="flex items-center justify-end gap-2">
-          <span className="text-sm text-gray-400">{formatDuration(durationMs)}</span>
+          <span className="text-sm text-gray-400">{formatDuration(song.durationMs)}</span>
           <DropdownMenu items={menuItems} />
         </div>
       </td>

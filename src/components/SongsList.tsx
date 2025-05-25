@@ -53,18 +53,7 @@ export function SongsList({
       </thead>
       <tbody>
         {songs.map((song: Song, index: number) => (
-          <TrackItem
-            key={song.id}
-            index={(currentPage - 1) * pageSize + index}
-            id={song.id}
-            title={song.title}
-            artist={song.artist}
-            album={song.album || ''}
-            dateAdded={song.createdAt || ''}
-            durationMs={song.durationMs}
-            isLiked={song.isLiked || false}
-            likeCount={song.likeCount ?? 0}
-          />
+          <TrackItem key={song.id} index={(currentPage - 1) * pageSize + index} song={song} />
         ))}
       </tbody>
     </table>

@@ -7,7 +7,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   return (
     <ProtectedRoute>
       <AppNav />
-      {children}
+      <div className="pb-20">{children}</div>
     </ProtectedRoute>
   );
 }

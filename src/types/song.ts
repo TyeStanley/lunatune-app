@@ -9,6 +9,6 @@ export interface Song {
   albumArtUrl?: string;
   createdAt: string;
   updatedAt?: string;
-  isLiked?: boolean;
-  likeCount?: number;
+  isLiked: boolean;
+  likeCount: number;
 }

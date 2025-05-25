@@ -1,13 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppThunk } from '@/redux/store';
 import { pause } from '../playback-controls/playbackControlsSlice';
+import { Song } from '@/types/song';
 
-interface Song {
-  id: string;
-  title: string;
-  artist: string;
-  duration: number;
-}
+const PLAYED_SONGS_STORAGE_KEY = 'lunatune_played_songs';
+const MAX_HISTORY_LENGTH = 50;
 
 interface QueueState {
   currentSong: Song | null;
@@ -74,6 +71,14 @@ export const playSong =
 
     // Set the new song as current
     dispatch(setCurrentSong(song));
+
+    // Get existing played songs from local storage and add current song at the beginning
+    const existingPlayedSongs = JSON.parse(localStorage.getItem(PLAYED_SONGS_STORAGE_KEY) || '[]');
+    // Filter out the current song if it exists in the history
+    const filteredHistory = existingPlayedSongs.filter((s: Song) => s.id !== song.id);
+    // Keep only the most recent MAX_HISTORY_LENGTH songs
+    const updatedHistory = [song, ...filteredHistory].slice(0, MAX_HISTORY_LENGTH);
+    localStorage.setItem(PLAYED_SONGS_STORAGE_KEY, JSON.stringify(updatedHistory));
   };
 
 export const skipForward = (): AppThunk => async (dispatch, getState) => {
@@ -93,6 +98,14 @@ export const skipForward = (): AppThunk => async (dispatch, getState) => {
 
   // Set it as current and start playing
   dispatch(setCurrentSong(nextSong));
+
+  // Get existing played songs from local storage and add current song at the beginning
+  const existingPlayedSongs = JSON.parse(localStorage.getItem(PLAYED_SONGS_STORAGE_KEY) || '[]');
+  // Filter out the current song if it exists in the history
+  const filteredHistory = existingPlayedSongs.filter((s: Song) => s.id !== currentSong.id);
+  // Keep only the most recent MAX_HISTORY_LENGTH songs
+  const updatedHistory = [currentSong, ...filteredHistory].slice(0, MAX_HISTORY_LENGTH);
+  localStorage.setItem(PLAYED_SONGS_STORAGE_KEY, JSON.stringify(updatedHistory));
 };
 
 export const skipBack = (): AppThunk => async (dispatch, getState) => {
