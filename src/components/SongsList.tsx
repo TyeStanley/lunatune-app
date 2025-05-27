@@ -59,7 +59,7 @@ export function SongsList({
             key={song.id}
             index={(currentPage - 1) * pageSize + index}
             song={song}
-            useLocalStorage
+            useLocalStorage={useLocalStorage}
           />
         ))}
       </tbody>
