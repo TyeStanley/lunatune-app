@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { fakePlaylists } from '@/constants';
 import { SongsList } from '@/components/SongsList';
-import { Library, Plus } from 'lucide-react';
+import { Library, Plus, Moon } from 'lucide-react';
 import { SearchInput } from '@/components/ui/SearchInput';
 
 export default function LibraryPage() {
@@ -19,10 +19,10 @@ export default function LibraryPage() {
   );
 
   return (
-    <div className="bg-background min-h-screen w-full">
+    <div className="">
       <div className="mx-auto flex max-w-7xl gap-4 px-4 sm:px-6 lg:px-8">
         {/* Sidebar */}
-        <aside className="bg-background flex h-screen w-72 shrink-0 flex-col border-r border-white/10">
+        <aside className="flex h-screen w-56 flex-col border-r border-white/10 md:w-72">
           {/* Sidebar Header */}
           <div className="flex items-center justify-between pt-6 pr-4 pb-4">
             <div className="flex items-center gap-2">
@@ -54,14 +54,19 @@ export default function LibraryPage() {
 
         {/* Main Content: Playlist Songs */}
         <main className="h-screen min-w-0 flex-1 py-0">
-          <div className="h-full w-full px-8 py-10">
-            <div className="mb-8">
-              <h2 className="mb-1 text-2xl font-semibold text-gray-200">
-                {selectedPlaylist?.name}
-              </h2>
-              {selectedPlaylist?.description && (
-                <p className="text-sm text-gray-400">{selectedPlaylist.description}</p>
-              )}
+          <div className="h-full w-full py-4 pl-4">
+            <div className="from-primary/30 to-background/0 via-primary/10 mb-8 flex items-center gap-6 rounded-lg bg-gradient-to-r p-6">
+              <div className="bg-primary/20 flex h-20 w-20 items-center justify-center rounded-lg">
+                <Moon size={38} className="text-primary" />
+              </div>
+              <div>
+                <h2 className="mb-1 text-2xl font-semibold text-gray-200">
+                  {selectedPlaylist?.name}
+                </h2>
+                {selectedPlaylist?.description && (
+                  <p className="text-sm text-gray-400">{selectedPlaylist.description}</p>
+                )}
+              </div>
             </div>
             <div className="bg-background-lighter/20 rounded-lg border border-white/5 p-6 backdrop-blur-md">
               <SongsList
