@@ -21,7 +21,7 @@ export default function PlaybackBar() {
           : 'hidden'
       }`}
     >
-      <div className="mx-auto flex max-w-screen-2xl items-center">
+      <div className="mx-auto flex max-w-7xl items-center px-4 sm:px-6 lg:px-8">
         {/* Left: Song Info */}
         <div className="flex w-[30%] items-center gap-4">
           <div className="bg-background-lighter flex h-14 w-14 items-center justify-center overflow-hidden rounded">
