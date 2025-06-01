@@ -27,6 +27,6 @@ export const baseQuery = fetchBaseQuery({
 
 export const baseApiConfig = {
   baseQuery,
-  tagTypes: ['Song', 'User'],
+  tagTypes: ['Song', 'User', 'Playlist'],
   keepUnusedDataFor: 60,
 };

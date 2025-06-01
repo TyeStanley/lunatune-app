@@ -4,7 +4,7 @@ import queueReducer from './state/queue/queueSlice';
 import userReducer from './state/user/userSlice';
 import { songApi } from './api/songApi';
 import { userApi } from './api/userApi';
-
+import { playlistApi } from './api/playlistApi';
 export const makeStore = () => {
   return configureStore({
     reducer: {
@@ -13,9 +13,10 @@ export const makeStore = () => {
       user: userReducer,
       [songApi.reducerPath]: songApi.reducer,
       [userApi.reducerPath]: userApi.reducer,
+      [playlistApi.reducerPath]: playlistApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(songApi.middleware, userApi.middleware),
+      getDefaultMiddleware().concat(songApi.middleware, userApi.middleware, playlistApi.middleware),
   });
 };
 
