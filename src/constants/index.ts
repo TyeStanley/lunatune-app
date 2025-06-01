@@ -67,6 +67,7 @@ export interface Playlist {
   createdAt: string;
   updatedAt: string;
   userId: string;
+  isCreator?: boolean;
   creator: {
     username: string;
   };

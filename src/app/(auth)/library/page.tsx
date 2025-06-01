@@ -7,28 +7,28 @@ import { SongsList } from '@/components/SongsList';
 import { Moon } from 'lucide-react';
 import LibrarySidebar from './LibrarySidebar';
 import { useAuth } from '@/hooks/useAuth';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 
 export default function LibraryPage() {
   const { user } = useAuth();
+  const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search, 400);
   const { data, isLoading, isError, refetch } = useGetUserPlaylistsQuery(
-    { searchTerm: '' },
+    { searchTerm: debouncedSearch },
     {
       skip: !user,
     },
   );
   const playlists: Playlist[] = data ?? [];
-  const [selectedPlaylistId, setSelectedPlaylistId] = useState<string | undefined>();
-  const [search, setSearch] = useState('');
+  const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | undefined>();
 
   // Set default selected playlist when playlists load
   useEffect(() => {
-    if (!selectedPlaylistId && playlists.length > 0) {
-      setSelectedPlaylistId(playlists[0].id);
+    if (!selectedPlaylist && playlists.length > 0) {
+      setSelectedPlaylist(playlists[0]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playlists]);
-
-  const selectedPlaylist = playlists.find((p: Playlist) => p.id === selectedPlaylistId);
 
   return (
     <div>
@@ -36,8 +36,8 @@ export default function LibraryPage() {
         {/* Sidebar */}
         <LibrarySidebar
           playlists={playlists}
-          selectedPlaylistId={selectedPlaylistId}
-          setSelectedPlaylistId={setSelectedPlaylistId}
+          selectedPlaylistId={selectedPlaylist?.id}
+          setSelectedPlaylistId={(id) => setSelectedPlaylist(playlists.find((p) => p.id === id))}
           search={search}
           setSearch={setSearch}
           isLoading={isLoading}

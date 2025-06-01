@@ -1,4 +1,4 @@
-import { Library } from 'lucide-react';
+import { Library, MoreVertical, Music, Pencil, Pin, Trash, User, Users } from 'lucide-react';
 import { SearchInput } from '@/components/ui/SearchInput';
 import type { Playlist } from '@/constants';
 import { Dispatch, SetStateAction, useState } from 'react';
@@ -27,21 +27,9 @@ export default function LibrarySidebar({
   isError,
   refetch,
 }: LibrarySidebarProps) {
-  // Filter playlists by search
-  const filteredPlaylists = playlists.filter(
-    (playlist: Playlist) =>
-      playlist.name.toLowerCase().includes(search.toLowerCase()) ||
-      (playlist.description?.toLowerCase().includes(search.toLowerCase()) ?? false),
-  );
-
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
   const [createPlaylist, { isLoading: isCreating }] = useCreatePlaylistMutation();
-
-  const handleOpenModal = () => {
-    setIsCreateModalOpen(true);
-    setCreateError(null);
-  };
 
   const handleCreate = async (name: string, description: string) => {
     setCreateError(null);
@@ -50,7 +38,7 @@ export default function LibrarySidebar({
       if (refetch) {
         refetch();
       }
-      setIsCreateModalOpen(false);
+      setIsModalOpen(false);
     } catch (err: unknown) {
       setCreateError(err instanceof Error ? err.message : 'Failed to create playlist.');
     }
@@ -65,7 +53,15 @@ export default function LibrarySidebar({
             <Library size={22} className="text-primary" />
             <span className="text-lg font-semibold text-gray-200">Your Library</span>
           </div>
-          <LibraryDropdown onCreatePlaylist={handleOpenModal} />
+          <LibraryDropdown
+            options={[
+              {
+                label: 'Create Playlist',
+                itemIcon: <Music size={16} className="text-gray-400" />,
+                onClick: () => setIsModalOpen(true),
+              },
+            ]}
+          />
         </div>
         <div className="mb-3 pr-4 pb-2">
           <SearchInput value={search} onChange={setSearch} placeholder="Search your playlists" />
@@ -79,16 +75,52 @@ export default function LibrarySidebar({
             <div className="px-4 py-2 text-red-400">Failed to load playlists</div>
           ) : (
             <ul className="flex flex-col gap-1">
-              {filteredPlaylists.map((playlist: Playlist) => (
-                <li key={playlist.id}>
+              {playlists.map((playlist: Playlist) => (
+                <li
+                  key={playlist.id}
+                  className={`group hover:text-primary hover:bg-primary/10 focus:bg-primary/20 focus:text-primary flex w-full items-center justify-between rounded-lg text-left font-medium text-gray-200 transition-colors focus:outline-none ${
+                    selectedPlaylistId === playlist.id
+                      ? 'bg-primary/20 text-primary hover:bg-primary/20'
+                      : ''
+                  }`}
+                >
                   <button
-                    className={`hover:bg-primary/10 hover:text-primary focus:bg-primary/20 focus:text-primary w-full rounded-lg px-4 py-2 text-left font-medium text-gray-200 transition-colors focus:outline-none ${
-                      selectedPlaylistId === playlist.id ? 'bg-primary/20 text-primary' : ''
-                    }`}
+                    className="flex w-full items-center gap-2 rounded-lg bg-transparent px-4 py-2 text-left"
                     onClick={() => setSelectedPlaylistId(playlist.id)}
                   >
+                    {/* Ownership icon */}
+                    {playlist.name !== 'Liked Songs' &&
+                      (playlist.isCreator ? (
+                        <User size={16} className="text-primary" />
+                      ) : (
+                        <Users size={16} className="text-gray-400" />
+                      ))}
+                    {/* Pin for Liked Songs */}
+                    {playlist.name === 'Liked Songs' && (
+                      <Pin size={16} className="text-yellow-400" />
+                    )}
                     {playlist.name}
                   </button>
+                  {playlist.name !== 'Liked Songs' && (
+                    <div className="invisible group-focus-within:visible group-hover:visible">
+                      <LibraryDropdown
+                        btnClassName="bg-transparent"
+                        icon={<MoreVertical size={20} className="text-gray-400" />}
+                        options={[
+                          {
+                            label: 'Edit',
+                            itemIcon: <Pencil size={16} className="text-gray-400" />,
+                            onClick: () => console.log('Edit'),
+                          },
+                          {
+                            label: 'Delete',
+                            itemIcon: <Trash size={16} className="text-gray-400" />,
+                            onClick: () => console.log('Delete'),
+                          },
+                        ]}
+                      />
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
@@ -96,8 +128,8 @@ export default function LibrarySidebar({
         </nav>
       </aside>
       <CreatePlaylistModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         onCreate={handleCreate}
         error={createError}
         isLoading={isCreating}

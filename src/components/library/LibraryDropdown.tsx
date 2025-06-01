@@ -1,11 +1,20 @@
 import { Plus } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
-interface LibraryDropdownProps {
-  onCreatePlaylist: () => void;
+interface DropdownOption {
+  label: string;
+  onClick: () => void;
+  itemIcon?: React.ReactNode; // Use itemIcon for the menu item icon
 }
 
-export function LibraryDropdown({ onCreatePlaylist }: LibraryDropdownProps) {
+interface LibraryDropdownProps {
+  options: DropdownOption[];
+  icon?: React.ReactNode; // Optional: allow custom trigger icon
+  className?: string;
+  btnClassName?: string;
+}
+
+export function LibraryDropdown({ options, icon, className, btnClassName }: LibraryDropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -24,25 +33,28 @@ export function LibraryDropdown({ onCreatePlaylist }: LibraryDropdownProps) {
   }, [open]);
 
   return (
-    <div className="relative" ref={ref}>
+    <div className={`relative ${className}`} ref={ref}>
       <button
-        className="bg-background-lighter/30 hover:bg-primary/20 hover:text-primary flex items-center justify-center rounded-full p-2 text-gray-200 focus:outline-none"
+        className={`hover:text-primary flex items-center justify-center rounded-full p-3 ${btnClassName ? btnClassName : 'bg-background-lighter/29 hover:bg-primary/20 text-gray-201 focus:outline-none'}`}
         onClick={() => setOpen((v) => !v)}
-        aria-label="Create"
       >
-        <Plus size={20} />
+        {icon || <Plus size={20} />}
       </button>
       {open && (
         <div className="bg-background-lighter/90 absolute right-0 z-10 mt-2 w-40 rounded-md border border-white/10 shadow-lg">
-          <button
-            className="hover:bg-primary/10 hover:text-primary w-full rounded-md px-4 py-2 text-left text-gray-200 transition-colors"
-            onClick={() => {
-              setOpen(false);
-              onCreatePlaylist();
-            }}
-          >
-            Create Playlist
-          </button>
+          {options.map((option, index) => (
+            <button
+              key={index}
+              className="hover:bg-primary/10 hover:text-primary flex w-full items-center gap-2 rounded-md px-4 py-2 text-left whitespace-nowrap text-gray-200 transition-colors"
+              onClick={() => {
+                setOpen(false);
+                option.onClick();
+              }}
+            >
+              {option.itemIcon && <span className="mr-1">{option.itemIcon}</span>}
+              {option.label}
+            </button>
+          ))}
         </div>
       )}
     </div>
