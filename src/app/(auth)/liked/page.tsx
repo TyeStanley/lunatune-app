@@ -28,10 +28,15 @@ export default function LikedSongs() {
     router.replace(`?${params.toString()}`, { scroll: false });
   }, [debouncedSearchQuery, currentPage, router]);
 
-  const { data, isLoading, isFetching, error } = useGetLikedSongsQuery({
-    searchTerm: debouncedSearchQuery,
-    page: currentPage,
-  });
+  const { data, isLoading, isFetching, error } = useGetLikedSongsQuery(
+    {
+      searchTerm: debouncedSearchQuery,
+      page: currentPage,
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    },
+  );
 
   const songs = data?.songs || [];
   const totalPages = data?.totalPages || 1;

@@ -1,6 +1,6 @@
 'use client';
 
-import { Play, Heart, Pause, Plus, Moon } from 'lucide-react';
+import { Play, Heart, Pause, Plus, Moon, Trash } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { pause, play } from '@/redux/state/playback-controls/playbackControlsSlice';
 import { getRelativeTime } from '@/lib/utils/date';
@@ -10,14 +10,26 @@ import { DropdownMenu } from './ui/DropdownMenu';
 import { useLikeSongMutation, useUnlikeSongMutation } from '@/redux/api/songApi';
 import { useState, useEffect } from 'react';
 import { Song } from '@/types/song';
+import {
+  useAddSongToPlaylistMutation,
+  useRemoveSongFromPlaylistMutation,
+} from '@/redux/api/playlistApi';
 
 interface TrackItemProps {
   index: number;
   song: Song;
   useLocalStorage?: boolean;
+  playlistId?: string;
+  isLikedSongsPlaylist?: boolean;
 }
 
-export default function TrackItem({ index, song, useLocalStorage = false }: TrackItemProps) {
+export default function TrackItem({
+  index,
+  song,
+  useLocalStorage = false,
+  playlistId,
+  isLikedSongsPlaylist = false,
+}: TrackItemProps) {
   const dispatch = useAppDispatch();
   const { currentSong } = useAppSelector((state) => state.queue);
   const { isPlaying } = useAppSelector((state) => state.playbackControls);
@@ -28,6 +40,8 @@ export default function TrackItem({ index, song, useLocalStorage = false }: Trac
   const isCurrentSong = currentSong?.id === song.id;
   const isCurrentlyPlaying = isCurrentSong && isPlaying;
   const isMutating = isLiking || isUnliking;
+  const [addSongToPlaylist] = useAddSongToPlaylistMutation();
+  const [removeSongFromPlaylist] = useRemoveSongFromPlaylistMutation();
 
   useEffect(() => {
     setIsLiked(song.isLiked);
@@ -70,12 +84,50 @@ export default function TrackItem({ index, song, useLocalStorage = false }: Trac
     }
   };
 
+  const handleAddToPlaylist = async () => {
+    if (!playlistId) return;
+    await addSongToPlaylist({ playlistId, songId: song.id });
+  };
+
+  const handleRemoveFromPlaylist = async () => {
+    if (!playlistId) return;
+    await removeSongFromPlaylist({ playlistId, songId: song.id });
+  };
+
+  const handleRemoveFromLikedSongs = async () => {
+    if (!playlistId) return;
+    await unlikeSong(song.id).unwrap();
+  };
+
   const menuItems = [
     {
       label: 'Add to Queue',
       icon: <Plus />,
       onClick: handleAddToQueue,
     },
+    ...(isLikedSongsPlaylist
+      ? [
+          {
+            label: 'Unlike',
+            icon: <Heart />,
+            onClick: handleRemoveFromLikedSongs,
+          },
+        ]
+      : playlistId
+        ? [
+            {
+              label: 'Remove from Playlist',
+              icon: <Trash />,
+              onClick: handleRemoveFromPlaylist,
+            },
+          ]
+        : [
+            {
+              label: 'Add to Playlist',
+              icon: <Plus />,
+              onClick: handleAddToPlaylist,
+            },
+          ]),
   ];
 
   return (

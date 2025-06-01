@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useGetUserPlaylistsQuery } from '@/redux/api/playlistApi';
+import { useGetPlaylistQuery, useGetUserPlaylistsQuery } from '@/redux/api/playlistApi';
 import type { Playlist } from '@/constants';
 import { SongsList } from '@/components/SongsList';
 import { Moon } from 'lucide-react';
@@ -21,6 +21,15 @@ export default function LibraryPage() {
   );
   const playlists: Playlist[] = data ?? [];
   const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | undefined>();
+  const {
+    data: currentPlaylist,
+    isLoading: isCurrentPlaylistLoading,
+    isError: isCurrentPlaylistError,
+    isFetching: isCurrentPlaylistFetching,
+  } = useGetPlaylistQuery(selectedPlaylist?.id ?? '', {
+    skip: !selectedPlaylist,
+    refetchOnMountOrArgChange: true,
+  });
 
   // Set default selected playlist when playlists load
   useEffect(() => {
@@ -63,13 +72,15 @@ export default function LibraryPage() {
             </div>
             <div className="bg-background-lighter/20 rounded-lg border border-white/5 p-6 backdrop-blur-md">
               <SongsList
-                songs={selectedPlaylist?.songs || []}
+                songs={currentPlaylist?.songs || []}
                 currentPage={1}
-                isLoading={false}
-                isFetching={false}
-                error={undefined}
+                isLoading={isCurrentPlaylistLoading}
+                isFetching={isCurrentPlaylistFetching}
+                error={isCurrentPlaylistError ? new Error('Failed to fetch playlist') : undefined}
                 emptyMessage="No songs in this playlist."
                 useLocalStorage={true}
+                playlistId={selectedPlaylist?.id}
+                isLikedSongsPlaylist={selectedPlaylist?.name === 'Liked Songs'}
               />
             </div>
           </div>

@@ -10,6 +10,8 @@ interface SongsListProps {
   error?: Error;
   emptyMessage?: string;
   useLocalStorage?: boolean;
+  playlistId?: string;
+  isLikedSongsPlaylist?: boolean;
 }
 
 export function SongsList({
@@ -20,6 +22,8 @@ export function SongsList({
   error,
   emptyMessage = 'No songs found',
   useLocalStorage = false,
+  playlistId,
+  isLikedSongsPlaylist = false,
 }: SongsListProps) {
   const pageSize = songs.length > 0 ? songs.length : 10;
 
@@ -60,6 +64,8 @@ export function SongsList({
             index={(currentPage - 1) * pageSize + index}
             song={song}
             useLocalStorage={useLocalStorage}
+            playlistId={playlistId}
+            isLikedSongsPlaylist={isLikedSongsPlaylist}
           />
         ))}
       </tbody>
