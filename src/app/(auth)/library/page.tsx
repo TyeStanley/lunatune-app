@@ -10,7 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 
 export default function LibraryPage() {
   const { user } = useAuth();
-  const { data, isLoading, isError } = useGetUserPlaylistsQuery(
+  const { data, isLoading, isError, refetch } = useGetUserPlaylistsQuery(
     { searchTerm: '' },
     {
       skip: !user,
@@ -42,6 +42,7 @@ export default function LibraryPage() {
           setSearch={setSearch}
           isLoading={isLoading}
           isError={isError}
+          refetch={refetch}
         />
 
         {/* Main Content: Playlist Songs */}
