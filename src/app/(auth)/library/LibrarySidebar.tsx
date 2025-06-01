@@ -3,8 +3,13 @@ import { SearchInput } from '@/components/ui/SearchInput';
 import type { Playlist } from '@/constants';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { LibraryDropdown } from '@/components/library/LibraryDropdown';
-import CreatePlaylistModal from '@/components/library/CreatePlaylistModal';
-import { useCreatePlaylistMutation } from '@/redux/api/playlistApi';
+import PlaylistModal from '@/components/library/PlaylistModal';
+import {
+  useCreatePlaylistMutation,
+  useEditPlaylistMutation,
+  useDeletePlaylistMutation,
+  useRemovePlaylistFromLibraryMutation,
+} from '@/redux/api/playlistApi';
 
 interface LibrarySidebarProps {
   playlists: Playlist[];
@@ -17,6 +22,8 @@ interface LibrarySidebarProps {
   refetch?: () => void;
 }
 
+type ModalMode = 'create' | 'edit' | 'delete' | 'remove';
+
 export default function LibrarySidebar({
   playlists,
   selectedPlaylistId,
@@ -27,21 +34,56 @@ export default function LibrarySidebar({
   isError,
   refetch,
 }: LibrarySidebarProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [createError, setCreateError] = useState<string | null>(null);
-  const [createPlaylist, { isLoading: isCreating }] = useCreatePlaylistMutation();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<ModalMode>('create');
+  const [modalError, setModalError] = useState<string | null>(null);
+  const [modalPlaylist, setModalPlaylist] = useState<Playlist | undefined>();
 
-  const handleCreate = async (name: string, description: string) => {
-    setCreateError(null);
+  const [createPlaylist, { isLoading: isCreating }] = useCreatePlaylistMutation();
+  const [editPlaylist, { isLoading: isEditing }] = useEditPlaylistMutation();
+  const [deletePlaylist, { isLoading: isDeleting }] = useDeletePlaylistMutation();
+  const [removePlaylistFromLibrary, { isLoading: isRemoving }] =
+    useRemovePlaylistFromLibraryMutation();
+
+  const handleModalAction = async (name?: string, description?: string) => {
+    setModalError(null);
     try {
-      await createPlaylist({ name, description }).unwrap();
-      if (refetch) {
-        refetch();
+      if (modalMode === 'create') {
+        await createPlaylist({ name: name!, description: description! }).unwrap();
+      } else if (modalMode === 'edit' && modalPlaylist) {
+        await editPlaylist({
+          id: modalPlaylist.id,
+          name: name!,
+          description: description!,
+        }).unwrap();
+      } else if (modalMode === 'delete' && modalPlaylist) {
+        await deletePlaylist(modalPlaylist.id).unwrap();
+      } else if (modalMode === 'remove' && modalPlaylist) {
+        await removePlaylistFromLibrary({ playlistId: modalPlaylist.id }).unwrap();
       }
-      setIsModalOpen(false);
+      if (refetch) refetch();
+      setModalOpen(false);
     } catch (err: unknown) {
-      setCreateError(err instanceof Error ? err.message : 'Failed to create playlist.');
+      setModalError(
+        err instanceof Error
+          ? err.message
+          : modalMode === 'create'
+            ? 'Failed to create playlist.'
+            : modalMode === 'edit'
+              ? 'Failed to edit playlist.'
+              : modalMode === 'delete'
+                ? 'Failed to delete playlist.'
+                : 'Failed to remove playlist.',
+      );
     }
+  };
+
+  // Open modal for create, edit, delete, or remove
+  const openModal = (playlist: Playlist | undefined, mode: ModalMode) => {
+    setModalMode(mode);
+    setModalPlaylist(playlist);
+    setModalError(null);
+    setModalOpen(true);
   };
 
   return (
@@ -58,7 +100,7 @@ export default function LibrarySidebar({
               {
                 label: 'Create Playlist',
                 itemIcon: <Music size={16} className="text-gray-400" />,
-                onClick: () => setIsModalOpen(true),
+                onClick: () => openModal(undefined, 'create'),
               },
             ]}
           />
@@ -106,18 +148,28 @@ export default function LibrarySidebar({
                       <LibraryDropdown
                         btnClassName="bg-transparent"
                         icon={<MoreVertical size={20} className="text-gray-400" />}
-                        options={[
-                          {
-                            label: 'Edit',
-                            itemIcon: <Pencil size={16} className="text-gray-400" />,
-                            onClick: () => console.log('Edit'),
-                          },
-                          {
-                            label: 'Delete',
-                            itemIcon: <Trash size={16} className="text-gray-400" />,
-                            onClick: () => console.log('Delete'),
-                          },
-                        ]}
+                        options={
+                          playlist.isCreator
+                            ? [
+                                {
+                                  label: 'Edit',
+                                  itemIcon: <Pencil size={16} className="text-gray-400" />,
+                                  onClick: () => openModal(playlist, 'edit'),
+                                },
+                                {
+                                  label: 'Delete',
+                                  itemIcon: <Trash size={16} className="text-gray-400" />,
+                                  onClick: () => openModal(playlist, 'delete'),
+                                },
+                              ]
+                            : [
+                                {
+                                  label: 'Remove from Library',
+                                  itemIcon: <Trash size={16} className="text-gray-400" />,
+                                  onClick: () => openModal(playlist, 'remove'),
+                                },
+                              ]
+                        }
                       />
                     </div>
                   )}
@@ -127,12 +179,26 @@ export default function LibrarySidebar({
           )}
         </nav>
       </aside>
-      <CreatePlaylistModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onCreate={handleCreate}
-        error={createError}
-        isLoading={isCreating}
+      <PlaylistModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSubmit={handleModalAction}
+        onDelete={modalMode === 'delete' ? () => handleModalAction() : undefined}
+        onRemove={modalMode === 'remove' ? () => handleModalAction() : undefined}
+        error={modalError}
+        isLoading={
+          modalMode === 'create'
+            ? isCreating
+            : modalMode === 'edit'
+              ? isEditing
+              : modalMode === 'delete'
+                ? isDeleting
+                : modalMode === 'remove'
+                  ? isRemoving
+                  : false
+        }
+        mode={modalMode}
+        playlist={modalPlaylist}
       />
     </>
   );

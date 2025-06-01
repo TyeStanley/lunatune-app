@@ -82,6 +82,15 @@ export const playlistApi = createApi({
         method: 'DELETE',
       }),
     }),
+
+    // 10. Edit playlist (update name/description)
+    editPlaylist: builder.mutation<Playlist, { id: string; name: string; description?: string }>({
+      query: ({ id, name, description }) => ({
+        url: `/playlist/${id}`,
+        method: 'PATCH',
+        body: { name, description },
+      }),
+    }),
   }),
 });
 
@@ -95,4 +104,5 @@ export const {
   useDeletePlaylistMutation,
   useAddPlaylistToLibraryMutation,
   useRemovePlaylistFromLibraryMutation,
+  useEditPlaylistMutation,
 } = playlistApi;
