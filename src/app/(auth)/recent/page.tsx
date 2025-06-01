@@ -9,6 +9,8 @@ import { SearchInput } from '@/components/ui/SearchInput';
 import { Pagination } from '@/components/ui/Pagination';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { Song } from '@/types/song';
+import AddToPlaylistModal from '@/components/library/AddToPlaylistModal';
+import { useAddSongToPlaylistMutation } from '@/redux/api/playlistApi';
 
 const PLAYED_SONGS_STORAGE_KEY = 'lunatune_played_songs';
 
@@ -25,6 +27,11 @@ export default function RecentPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   const debouncedSearchQuery = useDebouncedValue(searchQuery, 400);
+
+  // Add to Playlist modal state
+  const [showAddToPlaylistModal, setShowAddToPlaylistModal] = useState(false);
+  const [selectedSong, setSelectedSong] = useState<Song | null>(null);
+  const [addSongToPlaylist] = useAddSongToPlaylistMutation();
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -63,6 +70,16 @@ export default function RecentPage() {
   const startIndex = (currentPage - 1) * SONGS_PER_PAGE;
   const paginatedSongs = recentSongs.slice(startIndex, startIndex + SONGS_PER_PAGE);
 
+  const handleAddToPlaylist = (song: Song) => {
+    setSelectedSong(song);
+    setShowAddToPlaylistModal(true);
+  };
+
+  const handleAddToPlaylistSubmit = async (playlistId: string) => {
+    if (!selectedSong) return;
+    await addSongToPlaylist({ playlistId, songId: selectedSong.id });
+  };
+
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <PageHeader icon={History} title="Recently Played" />
@@ -93,8 +110,19 @@ export default function RecentPage() {
           error={undefined}
           emptyMessage="No recently played songs"
           useLocalStorage={true}
+          onAddToPlaylist={handleAddToPlaylist}
         />
       </div>
+      {/* Add to Playlist Modal */}
+      <AddToPlaylistModal
+        isOpen={showAddToPlaylistModal}
+        onClose={() => {
+          setShowAddToPlaylistModal(false);
+          setSelectedSong(null);
+        }}
+        song={selectedSong!}
+        onAddToPlaylist={handleAddToPlaylistSubmit}
+      />
     </div>
   );
 }

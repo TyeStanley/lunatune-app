@@ -12,6 +12,7 @@ interface SongsListProps {
   useLocalStorage?: boolean;
   playlistId?: string;
   isLikedSongsPlaylist?: boolean;
+  onAddToPlaylist?: (song: Song) => void;
 }
 
 export function SongsList({
@@ -24,6 +25,7 @@ export function SongsList({
   useLocalStorage = false,
   playlistId,
   isLikedSongsPlaylist = false,
+  onAddToPlaylist,
 }: SongsListProps) {
   const pageSize = songs.length > 0 ? songs.length : 10;
 
@@ -66,6 +68,7 @@ export function SongsList({
             useLocalStorage={useLocalStorage}
             playlistId={playlistId}
             isLikedSongsPlaylist={isLikedSongsPlaylist}
+            onAddToPlaylist={onAddToPlaylist}
           />
         ))}
       </tbody>

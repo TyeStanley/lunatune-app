@@ -1,6 +1,6 @@
 'use client';
 
-import { Play, Heart, Pause, Plus, Moon, Trash } from 'lucide-react';
+import { Play, Heart, Pause, Plus, Moon, Trash, PlayCircle } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { pause, play } from '@/redux/state/playback-controls/playbackControlsSlice';
 import { getRelativeTime } from '@/lib/utils/date';
@@ -21,6 +21,7 @@ interface TrackItemProps {
   useLocalStorage?: boolean;
   playlistId?: string;
   isLikedSongsPlaylist?: boolean;
+  onAddToPlaylist?: (song: Song) => void;
 }
 
 export default function TrackItem({
@@ -29,6 +30,7 @@ export default function TrackItem({
   useLocalStorage = false,
   playlistId,
   isLikedSongsPlaylist = false,
+  onAddToPlaylist,
 }: TrackItemProps) {
   const dispatch = useAppDispatch();
   const { currentSong } = useAppSelector((state) => state.queue);
@@ -85,7 +87,10 @@ export default function TrackItem({
   };
 
   const handleAddToPlaylist = async () => {
-    if (!playlistId) return;
+    if (!playlistId) {
+      onAddToPlaylist?.(song);
+      return;
+    }
     await addSongToPlaylist({ playlistId, songId: song.id });
   };
 
@@ -102,7 +107,7 @@ export default function TrackItem({
   const menuItems = [
     {
       label: 'Add to Queue',
-      icon: <Plus />,
+      icon: <PlayCircle />,
       onClick: handleAddToQueue,
     },
     ...(isLikedSongsPlaylist
