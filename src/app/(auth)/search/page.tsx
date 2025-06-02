@@ -56,7 +56,7 @@ export default function SearchPage() {
 
   const handleAddToPlaylistSubmit = async (playlistId: string) => {
     if (!selectedSong) return;
-    await addSongToPlaylist({ playlistId, songId: selectedSong.id });
+    return await addSongToPlaylist({ playlistId, songId: selectedSong.id }).unwrap();
   };
 
   return (

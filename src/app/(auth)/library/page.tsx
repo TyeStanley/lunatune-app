@@ -5,7 +5,7 @@ import { useGetPlaylistQuery, useGetUserPlaylistsQuery } from '@/redux/api/playl
 import type { Playlist } from '@/constants';
 import { SongsList } from '@/components/SongsList';
 import { Moon } from 'lucide-react';
-import LibrarySidebar from './LibrarySidebar';
+import LibrarySidebar from '../../../components/library/LibrarySidebar';
 import { useAuth } from '@/hooks/useAuth';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 

@@ -3,6 +3,7 @@ import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { useGetUserPlaylistsQuery } from '@/redux/api/playlistApi';
 import type { Playlist } from '@/constants';
 import type { Song } from '@/types/song';
+import { CheckCircle } from 'lucide-react';
 
 interface AddToPlaylistModalProps {
   isOpen: boolean;
@@ -24,6 +25,13 @@ export default function AddToPlaylistModal({
     isError: isPlaylistsError,
   } = useGetUserPlaylistsQuery({ searchTerm: debouncedSearch });
   const [addError, setAddError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  const handleClose = () => {
+    setAddError(null);
+    setSuccess(false);
+    onClose();
+  };
 
   if (!isOpen) return null;
 
@@ -31,7 +39,10 @@ export default function AddToPlaylistModal({
     setAddError(null);
     try {
       await onAddToPlaylist(playlistId);
-      onClose();
+      setSuccess(true);
+      setTimeout(() => {
+        handleClose();
+      }, 2500);
     } catch (err: unknown) {
       if (
         typeof err === 'object' &&
@@ -43,6 +54,13 @@ export default function AddToPlaylistModal({
         typeof (err as { data: { message?: unknown } }).data.message === 'string'
       ) {
         setAddError((err as { data: { message: string } }).data.message);
+      } else if (
+        typeof err === 'object' &&
+        err !== null &&
+        'message' in err &&
+        typeof (err as { message?: unknown }).message === 'string'
+      ) {
+        setAddError((err as { message: string }).message);
       } else {
         setAddError('Failed to add song to playlist.');
       }
@@ -51,13 +69,13 @@ export default function AddToPlaylistModal({
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center">
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={handleClose} />
       <div className="relative z-40 w-full max-w-md">
         <div className="bg-background-lighter/20 rounded-xl border border-white/5 p-6 backdrop-blur-md">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-200">Add to Playlist</h2>
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="rounded-full p-1 text-gray-400 hover:bg-white/5 hover:text-gray-200"
             >
               <span className="sr-only">Close</span>
@@ -71,43 +89,50 @@ export default function AddToPlaylistModal({
               </svg>
             </button>
           </div>
-          <input
-            type="text"
-            className="bg-background-lighter/40 focus:border-primary mb-3 w-full rounded-md border border-white/10 px-3 py-2 text-gray-200 placeholder-gray-400 focus:outline-none"
-            placeholder="Search your playlists"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            autoFocus
-          />
-          {isPlaylistsLoading ? (
-            <div className="py-4 text-center text-gray-400">Loading playlists...</div>
-          ) : isPlaylistsError ? (
-            <div className="py-4 text-center text-red-400">Failed to load playlists</div>
+          {success ? (
+            <div className="flex flex-col items-center justify-center py-8">
+              <CheckCircle size={48} className="text-primary mb-2" />
+              <div className="text-primary text-lg font-semibold">Song added to playlist!</div>
+            </div>
           ) : (
-            <ul className="max-h-60 space-y-1 overflow-y-auto">
-              {userPlaylists &&
-              (userPlaylists as Playlist[]).filter((p: Playlist) => p.name !== 'Liked Songs')
-                .length === 0 ? (
-                <li className="py-2 text-center text-gray-400">No playlists found.</li>
+            <>
+              <input
+                type="text"
+                className="bg-background-lighter/40 focus:border-primary mb-3 w-full rounded-md border border-white/10 px-3 py-2 text-gray-200 placeholder-gray-400 focus:outline-none"
+                placeholder="Search your playlists"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                autoFocus
+              />
+              {isPlaylistsLoading ? (
+                <div className="py-4 text-center text-gray-400">Loading playlists...</div>
+              ) : isPlaylistsError ? (
+                <div className="py-4 text-center text-red-400">Failed to load playlists</div>
               ) : (
-                userPlaylists &&
-                (userPlaylists as Playlist[])
-                  .filter((p: Playlist) => p.name !== 'Liked Songs')
-                  .map((playlist: Playlist) => (
-                    <li key={playlist.id}>
-                      <button
-                        className="hover:bg-primary/10 flex w-full items-center gap-2 rounded-md px-4 py-2 text-left text-gray-200 transition-colors"
-                        onClick={() => handleSelectPlaylist(playlist.id)}
-                      >
-                        <span className="font-medium">{playlist.name}</span>
-                        {playlist.isCreator && (
-                          <span className="text-primary ml-2 text-xs">(Owner)</span>
-                        )}
-                      </button>
-                    </li>
-                  ))
+                <ul className="max-h-60 space-y-1 overflow-y-auto">
+                  {userPlaylists &&
+                  (userPlaylists as Playlist[]).filter(
+                    (p: Playlist) => p.name !== 'Liked Songs' && p.isCreator,
+                  ).length === 0 ? (
+                    <li className="py-2 text-center text-gray-400">No playlists found.</li>
+                  ) : (
+                    userPlaylists &&
+                    (userPlaylists as Playlist[])
+                      .filter((p: Playlist) => p.name !== 'Liked Songs' && p.isCreator)
+                      .map((playlist: Playlist) => (
+                        <li key={playlist.id}>
+                          <button
+                            className="hover:bg-primary/10 flex w-full items-center gap-2 rounded-md px-4 py-2 text-left text-gray-200 transition-colors"
+                            onClick={() => handleSelectPlaylist(playlist.id)}
+                          >
+                            <span className="font-medium">{playlist.name}</span>
+                          </button>
+                        </li>
+                      ))
+                  )}
+                </ul>
               )}
-            </ul>
+            </>
           )}
           {addError && <div className="mt-3 text-center text-sm text-red-400">{addError}</div>}
         </div>
