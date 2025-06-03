@@ -35,7 +35,7 @@ export const queueSlice = createSlice({
       state.upcomingSongs.splice(action.payload, 1);
     },
     addToPlayed: (state, action: PayloadAction<Song>) => {
-      state.playedSongs.push(action.payload);
+      state.playedSongs.unshift(action.payload);
     },
     removeFromPlayed: (state, action: PayloadAction<number>) => {
       state.playedSongs.splice(action.payload, 1);
@@ -44,6 +44,14 @@ export const queueSlice = createSlice({
       state.currentSong = null;
       state.upcomingSongs = [];
       state.playedSongs = [];
+    },
+    setQueueFromPlaylist: (
+      state,
+      action: PayloadAction<{ currentSong: Song; previousSongs: Song[]; upcomingSongs: Song[] }>,
+    ) => {
+      state.currentSong = action.payload.currentSong;
+      state.playedSongs = action.payload.previousSongs;
+      state.upcomingSongs = action.payload.upcomingSongs;
     },
   },
 });
@@ -56,6 +64,7 @@ export const {
   addToPlayed,
   removeFromPlayed,
   clearQueue,
+  setQueueFromPlaylist,
 } = queueSlice.actions;
 
 // Thunk actions
@@ -78,6 +87,39 @@ export const playSong =
     const filteredHistory = existingPlayedSongs.filter((s: Song) => s.id !== song.id);
     // Keep only the most recent MAX_HISTORY_LENGTH songs
     const updatedHistory = [song, ...filteredHistory].slice(0, MAX_HISTORY_LENGTH);
+    localStorage.setItem(PLAYED_SONGS_STORAGE_KEY, JSON.stringify(updatedHistory));
+  };
+
+export const playSongFromPlaylist =
+  (song: Song, playlistSongs: Song[]): AppThunk =>
+  (dispatch) => {
+    const currentIndex = playlistSongs.findIndex((s) => s.id === song.id);
+    if (currentIndex === -1) return;
+
+    const previousSongs = playlistSongs.slice(0, currentIndex).reverse();
+    const upcomingSongs = playlistSongs.slice(currentIndex + 1);
+
+    dispatch(
+      setQueueFromPlaylist({
+        currentSong: song,
+        previousSongs,
+        upcomingSongs,
+      }),
+    );
+
+    // Get existing played songs from local storage
+    const existingPlayedSongs = JSON.parse(localStorage.getItem(PLAYED_SONGS_STORAGE_KEY) || '[]');
+
+    // Filter out any songs that are in the current playlist from localStorage
+    const filteredHistory = existingPlayedSongs.filter(
+      (s: Song) => !playlistSongs.some((playlistSong) => playlistSong.id === s.id),
+    );
+
+    // Put playlist songs first (most recent) followed by filtered history
+    const updatedHistory = [song, ...previousSongs, ...filteredHistory].slice(
+      0,
+      MAX_HISTORY_LENGTH,
+    );
     localStorage.setItem(PLAYED_SONGS_STORAGE_KEY, JSON.stringify(updatedHistory));
   };
 
@@ -117,8 +159,8 @@ export const skipBack = (): AppThunk => async (dispatch, getState) => {
   dispatch(addToUpcomingStart(currentSong));
 
   // Get and remove the last played song
-  const previousSong = playedSongs[playedSongs.length - 1];
-  dispatch(removeFromPlayed(playedSongs.length - 1));
+  const previousSong = playedSongs[0];
+  dispatch(removeFromPlayed(0));
 
   // Set it as current and start playing
   dispatch(setCurrentSong(previousSong));

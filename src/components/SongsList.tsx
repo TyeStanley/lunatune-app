@@ -7,7 +7,7 @@ interface SongsListProps {
   currentPage: number;
   isLoading: boolean;
   isFetching: boolean;
-  error?: Error;
+  error?: Error | string;
   emptyMessage?: string;
   useLocalStorage?: boolean;
   playlistId?: string;
@@ -54,8 +54,8 @@ export function SongsList({
           <th className="hidden pb-2 sm:table-cell">Album</th>
           <th className="hidden pb-2 md:table-cell">Date added</th>
           {!useLocalStorage && <th className="pb-2">Likes</th>}
-          <th className="ml-3 flex">
-            <Clock size={18} className="text-gray-400" />
+          <th>
+            <Clock size={18} className="ml-2.5 text-gray-400" />
           </th>
         </tr>
       </thead>
@@ -69,6 +69,7 @@ export function SongsList({
             playlistId={playlistId}
             isLikedSongsPlaylist={isLikedSongsPlaylist}
             onAddToPlaylist={onAddToPlaylist}
+            playlistSongs={songs}
           />
         ))}
       </tbody>

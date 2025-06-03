@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { pause, play } from '@/redux/state/playback-controls/playbackControlsSlice';
 import { getRelativeTime } from '@/lib/utils/date';
 import { formatDuration } from '@/lib/utils/duration';
-import { playSong, addToUpcoming } from '@/redux/state/queue/queueSlice';
+import { playSong, addToUpcoming, playSongFromPlaylist } from '@/redux/state/queue/queueSlice';
 import { DropdownMenu } from './ui/DropdownMenu';
 import { useLikeSongMutation, useUnlikeSongMutation } from '@/redux/api/songApi';
 import { useState, useEffect } from 'react';
@@ -22,6 +22,7 @@ interface TrackItemProps {
   playlistId?: string;
   isLikedSongsPlaylist?: boolean;
   onAddToPlaylist?: (song: Song) => void;
+  playlistSongs?: Song[];
 }
 
 export default function TrackItem({
@@ -31,6 +32,7 @@ export default function TrackItem({
   playlistId,
   isLikedSongsPlaylist = false,
   onAddToPlaylist,
+  playlistSongs,
 }: TrackItemProps) {
   const dispatch = useAppDispatch();
   const { currentSong } = useAppSelector((state) => state.queue);
@@ -57,6 +59,8 @@ export default function TrackItem({
       } else {
         dispatch(play());
       }
+    } else if (playlistId && playlistSongs) {
+      dispatch(playSongFromPlaylist(song, playlistSongs));
     } else {
       dispatch(playSong(song));
     }

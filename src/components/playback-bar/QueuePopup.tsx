@@ -72,8 +72,12 @@ export default function QueuePopup({ isOpen }: QueuePopupProps) {
             <div>
               {playedSongs.length > 0 ? (
                 <div className="bg-background-lighter/20 rounded-lg border border-white/5 p-2 backdrop-blur-sm">
-                  {playedSongs.map((song) => (
-                    <QueueItem key={song.id} title={song.title} artist={song.artist} />
+                  {playedSongs.map((song, index) => (
+                    <QueueItem
+                      key={`${song.id}-${index}`}
+                      title={song.title}
+                      artist={song.artist}
+                    />
                   ))}
                 </div>
               ) : (
