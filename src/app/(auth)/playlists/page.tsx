@@ -160,14 +160,16 @@ export default function PlaylistsPage() {
                       Delete
                     </button>
                   ) : (
-                    playlist.isInLibrary && (
-                      <button
-                        onClick={() => handleLibraryAction(playlist)}
-                        className="flex-1 rounded-md bg-gray-600/90 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-all hover:bg-gray-600"
-                      >
-                        Remove from Library
-                      </button>
-                    )
+                    <button
+                      onClick={() => handleLibraryAction(playlist)}
+                      className={`flex-1 rounded-md px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-all ${
+                        playlist.isInLibrary
+                          ? 'bg-gray-600/90 hover:bg-gray-600'
+                          : 'bg-cyan-500/90 hover:bg-cyan-500'
+                      }`}
+                    >
+                      {playlist.isInLibrary ? 'Remove from Library' : 'Add to Library'}
+                    </button>
                   )}
                 </div>
               </div>
