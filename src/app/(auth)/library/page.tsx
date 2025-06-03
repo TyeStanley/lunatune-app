@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useGetPlaylistQuery, useGetUserPlaylistsQuery } from '@/redux/api/playlistApi';
-import type { Playlist } from '@/constants';
+import type { Playlist } from '@/types/playlist';
 import { SongsList } from '@/components/SongsList';
 import { Moon } from 'lucide-react';
 import LibrarySidebar from '../../../components/library/LibrarySidebar';
@@ -17,6 +17,7 @@ export default function LibraryPage() {
     { searchTerm: debouncedSearch },
     {
       skip: !user,
+      refetchOnMountOrArgChange: true,
     },
   );
   const playlists: Playlist[] = data ?? [];

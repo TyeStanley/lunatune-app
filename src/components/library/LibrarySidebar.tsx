@@ -1,6 +1,6 @@
 import { Library, MoreVertical, Music, Pencil, Pin, Trash, User, Users } from 'lucide-react';
 import { SearchInput } from '@/components/ui/SearchInput';
-import type { Playlist } from '@/constants';
+import type { Playlist } from '@/types/playlist';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { LibraryDropdown } from '@/components/library/LibraryDropdown';
 import PlaylistModal from '@/components/library/PlaylistModal';
@@ -45,16 +45,21 @@ export default function LibrarySidebar({
   const [removePlaylistFromLibrary, { isLoading: isRemoving }] =
     useRemovePlaylistFromLibraryMutation();
 
-  const handleModalAction = async (name?: string, description?: string) => {
+  const handleModalAction = async (name?: string, description?: string, isPublic?: boolean) => {
     setModalError(null);
     try {
       if (modalMode === 'create') {
-        await createPlaylist({ name: name!, description: description! }).unwrap();
+        await createPlaylist({
+          name: name!,
+          description: description!,
+          isPublic: isPublic!,
+        }).unwrap();
       } else if (modalMode === 'edit' && modalPlaylist) {
         await editPlaylist({
           id: modalPlaylist.id,
           name: name!,
           description: description!,
+          isPublic: isPublic!,
         }).unwrap();
       } else if (modalMode === 'delete' && modalPlaylist) {
         await deletePlaylist(modalPlaylist.id).unwrap();
@@ -181,7 +186,10 @@ export default function LibrarySidebar({
       </aside>
       <PlaylistModal
         isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
+        onClose={() => {
+          setModalOpen(false);
+          setModalPlaylist(undefined);
+        }}
         onSubmit={handleModalAction}
         onDelete={modalMode === 'delete' ? () => handleModalAction() : undefined}
         onRemove={modalMode === 'remove' ? () => handleModalAction() : undefined}

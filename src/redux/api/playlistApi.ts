@@ -35,7 +35,10 @@ export const playlistApi = createApi({
     }),
 
     // 4. Create playlist
-    createPlaylist: builder.mutation<Playlist, { name: string; description?: string }>({
+    createPlaylist: builder.mutation<
+      Playlist,
+      { name: string; description?: string; isPublic: boolean }
+    >({
       query: (body) => ({
         url: '/playlist',
         method: 'POST',
@@ -84,11 +87,14 @@ export const playlistApi = createApi({
     }),
 
     // 10. Edit playlist (update name/description)
-    editPlaylist: builder.mutation<Playlist, { id: string; name: string; description?: string }>({
-      query: ({ id, name, description }) => ({
+    editPlaylist: builder.mutation<
+      Playlist,
+      { id: string; name: string; description?: string; isPublic: boolean }
+    >({
+      query: ({ id, name, description, isPublic }) => ({
         url: `/playlist/${id}`,
         method: 'PATCH',
-        body: { name, description },
+        body: { name, description, isPublic },
       }),
     }),
   }),

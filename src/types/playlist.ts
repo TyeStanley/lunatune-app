@@ -10,6 +10,7 @@ export interface Playlist {
   userId: string;
   isCreator?: boolean;
   isInLibrary?: boolean;
+  isPublic: boolean;
   creator: {
     username: string;
   };

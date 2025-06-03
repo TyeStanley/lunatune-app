@@ -1,4 +1,4 @@
-import { X, Plus, Pencil, Trash } from 'lucide-react';
+import { X, Plus, Pencil, Trash, Globe, Lock } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 type ModalMode = 'create' | 'edit' | 'delete' | 'remove';
@@ -6,13 +6,13 @@ type ModalMode = 'create' | 'edit' | 'delete' | 'remove';
 interface PlaylistModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (name: string, description: string) => void;
+  onSubmit: (name: string, description: string, isPublic: boolean) => void;
   onDelete?: () => void;
   onRemove?: () => void;
   error?: string | null;
   isLoading?: boolean;
   mode: ModalMode;
-  playlist?: { name: string; description?: string };
+  playlist?: { name: string; description?: string; isPublic?: boolean };
 }
 
 export default function PlaylistModal({
@@ -28,25 +28,29 @@ export default function PlaylistModal({
 }: PlaylistModalProps) {
   const [name, setName] = useState(playlist?.name || '');
   const [description, setDescription] = useState(playlist?.description || '');
+  const [isPublic, setIsPublic] = useState(playlist?.isPublic ?? false);
 
   useEffect(() => {
     if (isOpen) {
       setName(playlist?.name || '');
       setDescription(playlist?.description || '');
+      setIsPublic(playlist?.isPublic ?? false);
     }
   }, [isOpen, playlist]);
 
   if (!isOpen) return null;
 
   const handleSubmit = () => {
-    onSubmit(name.trim(), description.trim());
+    onSubmit(name.trim(), description.trim(), isPublic);
     setName('');
     setDescription('');
+    setIsPublic(false);
   };
 
   const handleClose = () => {
     setName('');
     setDescription('');
+    setIsPublic(false);
     onClose();
   };
 
@@ -112,6 +116,30 @@ export default function PlaylistModal({
                 maxLength={200}
                 rows={3}
               />
+              <div className="bg-background-lighter/40 flex items-center justify-between rounded-md border border-white/10 px-3 py-2">
+                <div className="flex items-center gap-2">
+                  {isPublic ? (
+                    <Globe size={18} className="text-primary" />
+                  ) : (
+                    <Lock size={18} className="text-gray-400" />
+                  )}
+                  <span className="text-sm text-gray-200">
+                    {isPublic ? 'Public' : 'Private'} Playlist
+                  </span>
+                </div>
+                <button
+                  onClick={() => setIsPublic(!isPublic)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
+                    isPublic ? 'bg-primary' : 'bg-gray-600'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      isPublic ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
               {error && <p className="text-sm text-red-400">{error}</p>}
             </div>
           )}
