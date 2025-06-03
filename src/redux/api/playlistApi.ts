@@ -1,6 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseApiConfig } from './baseApi';
-import { Playlist } from '@/constants';
+import { Playlist } from '@/types/playlist';
 
 export const playlistApi = createApi({
   ...baseApiConfig,

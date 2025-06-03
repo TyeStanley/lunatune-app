@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { useGetUserPlaylistsQuery } from '@/redux/api/playlistApi';
-import type { Playlist } from '@/constants';
+import type { Playlist } from '@/types/playlist';
 import type { Song } from '@/types/song';
 import { CheckCircle } from 'lucide-react';
 

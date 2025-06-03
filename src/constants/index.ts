@@ -8,7 +8,6 @@ import {
   TrendingUp,
   Timer,
 } from 'lucide-react';
-import { Song } from '@/types/song';
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
@@ -57,18 +56,3 @@ export const dashboardOptions = [
     href: '/sleep-timer',
   },
 ];
-
-// Playlist type for the library sidebar
-export interface Playlist {
-  id: string;
-  name: string;
-  description?: string;
-  songs?: Song[];
-  createdAt: string;
-  updatedAt: string;
-  userId: string;
-  isCreator?: boolean;
-  creator: {
-    username: string;
-  };
-}
