@@ -71,28 +71,53 @@ export default function AudioVisualizer() {
 
       analyser.getByteFrequencyData(dataArray);
 
-      ctx.fillStyle = 'black';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       const barWidth = (canvas.width / bufferLength) * 2.5;
       let x = 0;
 
-      ctx.strokeStyle = 'white';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
+      // Get Tailwind primary color from CSS variable (fallback to white)
+      const primaryColor =
+        getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() ||
+        '#FFFFFF';
 
+      // Create gradient for the wave
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      gradient.addColorStop(0, primaryColor);
+      gradient.addColorStop(1, 'rgba(255, 255, 255, 0.2)');
+
+      ctx.beginPath();
+      ctx.moveTo(0, canvas.height); // Start at bottom-left
+
+      // Draw the wave upwards from the bottom
       for (let i = 0; i < bufferLength; i++) {
         const barHeight = (dataArray[i] / 255) * canvas.height;
-
-        if (i === 0) {
-          ctx.moveTo(x, canvas.height - barHeight);
-        } else {
-          ctx.lineTo(x, canvas.height - barHeight);
-        }
-
+        const y = canvas.height - barHeight;
+        ctx.lineTo(x, y);
         x += barWidth;
       }
 
+      ctx.lineTo(canvas.width, canvas.height); // Bottom-right
+      ctx.closePath();
+      ctx.fillStyle = gradient;
+      ctx.fill();
+
+      // Draw the wave outline
+      ctx.beginPath();
+      x = 0;
+      for (let i = 0; i < bufferLength; i++) {
+        const barHeight = (dataArray[i] / 255) * canvas.height;
+        const y = canvas.height - barHeight;
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+        x += barWidth;
+      }
+      ctx.strokeStyle = primaryColor;
+      ctx.lineWidth = 2;
       ctx.stroke();
     };
 
@@ -110,7 +135,7 @@ export default function AudioVisualizer() {
       ref={canvasRef}
       width={800}
       height={400}
-      className="h-[400px] w-full rounded-lg bg-black"
+      className="border-primary h-[400px] w-full rounded-lg border bg-black/30"
     />
   );
 }
