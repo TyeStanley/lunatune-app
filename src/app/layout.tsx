@@ -30,19 +30,20 @@ export default function RootLayout({
         <StoreProvider>
           <AuthProvider>
             <UserManager />
-            <div className="bg-background relative min-h-screen">
-              {/* Background gradients */}
-              <div className="from-background via-background-light/10 to-primary/5 absolute inset-0 bg-gradient-to-br" />
-              <div className="from-primary/10 via-background to-background absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))]" />
+            <AudioPlayer>
+              <div className="bg-background relative min-h-screen">
+                {/* Background gradients */}
+                <div className="from-background via-background-light/10 to-primary/5 absolute inset-0 bg-gradient-to-br" />
+                <div className="from-primary/10 via-background to-background absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))]" />
 
-              {/* Content */}
-              <div className="relative">
-                {children}
-                <PlaybackBar />
-                <AudioPlayer />
-                <SleepTimerManager />
+                {/* Content */}
+                <div className="relative">
+                  {children}
+                  <PlaybackBar />
+                  <SleepTimerManager />
+                </div>
               </div>
-            </div>
+            </AudioPlayer>
           </AuthProvider>
         </StoreProvider>
       </body>

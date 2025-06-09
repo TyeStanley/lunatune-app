@@ -10,8 +10,9 @@ import {
 } from '@/redux/state/playback-controls/playbackControlsSlice';
 import { skipForward } from '@/redux/state/queue/queueSlice';
 import { useGetStreamUrlQuery } from '@/redux/api/songApi';
+import AudioProvider from '@/providers/AudioProvider';
 
-export default function AudioPlayer() {
+export default function AudioPlayer({ children }: { children: React.ReactNode }) {
   const audioRef1 = useRef<HTMLAudioElement>(null);
   const audioRef2 = useRef<HTMLAudioElement>(null);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -199,9 +200,10 @@ export default function AudioPlayer() {
   }, [volume]);
 
   return (
-    <>
+    <AudioProvider currentAudioRef={currentAudioRef} audioRef1={audioRef1} audioRef2={audioRef2}>
+      {children}
       <audio ref={audioRef1} preload="auto" crossOrigin="anonymous" />
       <audio ref={audioRef2} preload="auto" crossOrigin="anonymous" />
-    </>
+    </AudioProvider>
   );
 }
