@@ -26,6 +26,50 @@ export default function AudioPlayer({ children }: { children: React.ReactNode })
     (state) => state.playbackControls,
   );
 
+  // Audio context and nodes
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const source1Ref = useRef<MediaElementAudioSourceNode | null>(null);
+  const source2Ref = useRef<MediaElementAudioSourceNode | null>(null);
+
+  // Initialize audio context and analyzer
+  useEffect(() => {
+    if (!audioRef1.current || !audioRef2.current) return;
+
+    if (!audioContextRef.current) {
+      const audioContext = new AudioContext();
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 2048;
+      analyser.smoothingTimeConstant = 0.8;
+
+      audioContextRef.current = audioContext;
+      analyserRef.current = analyser;
+
+      // Create source nodes for both audio elements
+      try {
+        const source1 = audioContext.createMediaElementSource(audioRef1.current);
+        const source2 = audioContext.createMediaElementSource(audioRef2.current);
+
+        source1.connect(analyser);
+        source1.connect(audioContext.destination);
+        source2.connect(analyser);
+        source2.connect(audioContext.destination);
+
+        source1Ref.current = source1;
+        source2Ref.current = source2;
+      } catch (error) {
+        console.error('Error creating media element sources:', error);
+      }
+    }
+
+    return () => {
+      // Cleanup will happen when component unmounts
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
+    };
+  }, []);
+
   // Get the stream url for the current song
   const { data: streamData } = useGetStreamUrlQuery(currentSong?.id ?? '', {
     skip: !currentSong?.id,
@@ -122,11 +166,15 @@ export default function AudioPlayer({ children }: { children: React.ReactNode })
 
   // Handle play/pause
   useEffect(() => {
-    if (!audioRef1.current || !currentSong) return;
+    if (!audioRef1.current || !currentSong || !audioContextRef.current) return;
 
     const currentAudio = currentAudioRef.current || audioRef1.current;
 
     if (isPlaying) {
+      // Resume audio context if it's suspended
+      if (audioContextRef.current.state === 'suspended') {
+        audioContextRef.current.resume();
+      }
       currentAudio.play();
     } else {
       currentAudio.pause();
@@ -200,7 +248,15 @@ export default function AudioPlayer({ children }: { children: React.ReactNode })
   }, [volume]);
 
   return (
-    <AudioProvider currentAudioRef={currentAudioRef} audioRef1={audioRef1} audioRef2={audioRef2}>
+    <AudioProvider
+      currentAudioRef={currentAudioRef}
+      audioRef1={audioRef1}
+      audioRef2={audioRef2}
+      source1={source1Ref.current}
+      source2={source2Ref.current}
+      audioContext={audioContextRef.current}
+      analyser={analyserRef.current}
+    >
       {children}
       <audio ref={audioRef1} preload="auto" crossOrigin="anonymous" />
       <audio ref={audioRef2} preload="auto" crossOrigin="anonymous" />

@@ -4,59 +4,21 @@ import { useAudio } from '@/providers/AudioProvider';
 export default function AudioVisualizer() {
   // Reference to the canvas element where we draw the visualization
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  // Get all audio element references from our audio provider
-  const { currentAudioRef, audioRef1, audioRef2 } = useAudio();
+  // Get all audio element references and nodes from our audio provider
+  const { currentAudioRef, audioRef1, audioRef2, audioContext, analyser } = useAudio();
   // Reference to store the animation frame ID for cleanup
   const animationRef = useRef<number | undefined>(undefined);
-  // Reference to store the Web Audio API context
-  const audioContextRef = useRef<AudioContext | undefined>(undefined);
-  // Reference to store the analyzer node that processes audio data
-  const analyserRef = useRef<AnalyserNode | undefined>(undefined);
-  // References to store the media element source nodes for both audio elements
-  const sourceRef1 = useRef<MediaElementAudioSourceNode | undefined>(undefined);
-  const sourceRef2 = useRef<MediaElementAudioSourceNode | undefined>(undefined);
 
   useEffect(() => {
-    if (!currentAudioRef.current || !audioRef1.current || !audioRef2.current || !canvasRef.current)
+    if (
+      !currentAudioRef.current ||
+      !audioRef1.current ||
+      !audioRef2.current ||
+      !canvasRef.current ||
+      !audioContext ||
+      !analyser
+    )
       return;
-
-    // Create audio context and analyzer only if they don't exist
-    if (!audioContextRef.current) {
-      const audioContext = new AudioContext();
-      const analyser = audioContext.createAnalyser();
-      analyser.fftSize = 2048;
-      analyser.smoothingTimeConstant = 0.8;
-
-      audioContextRef.current = audioContext;
-      analyserRef.current = analyser;
-    }
-
-    const audioContext = audioContextRef.current;
-    const analyser = analyserRef.current;
-
-    if (!audioContext || !analyser) return;
-
-    // Set up audio sources for both audio elements
-    try {
-      // Set up source for audioRef1 if not already set
-      if (!sourceRef1.current && audioRef1.current) {
-        const source1 = audioContext.createMediaElementSource(audioRef1.current);
-        source1.connect(analyser);
-        source1.connect(audioContext.destination);
-        sourceRef1.current = source1;
-      }
-
-      // Set up source for audioRef2 if not already set
-      if (!sourceRef2.current && audioRef2.current) {
-        const source2 = audioContext.createMediaElementSource(audioRef2.current);
-        source2.connect(analyser);
-        source2.connect(audioContext.destination);
-        sourceRef2.current = source2;
-      }
-    } catch (error) {
-      console.error('Error creating media element sources:', error);
-      return;
-    }
 
     // Start animation
     const canvas = canvasRef.current;
@@ -128,7 +90,7 @@ export default function AudioVisualizer() {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [currentAudioRef, audioRef1, audioRef2]);
+  }, [currentAudioRef, audioRef1, audioRef2, audioContext, analyser]);
 
   return (
     <canvas

@@ -6,6 +6,10 @@ interface AudioContextType {
   currentAudioRef: RefObject<HTMLAudioElement | null>;
   audioRef1: RefObject<HTMLAudioElement | null>;
   audioRef2: RefObject<HTMLAudioElement | null>;
+  source1: MediaElementAudioSourceNode | null;
+  source2: MediaElementAudioSourceNode | null;
+  audioContext: AudioContext | null;
+  analyser: AnalyserNode | null;
 }
 
 const AudioContext = createContext<AudioContextType | null>(null);
@@ -23,6 +27,10 @@ interface AudioProviderProps {
   currentAudioRef: RefObject<HTMLAudioElement | null>;
   audioRef1: RefObject<HTMLAudioElement | null>;
   audioRef2: RefObject<HTMLAudioElement | null>;
+  source1: MediaElementAudioSourceNode | null;
+  source2: MediaElementAudioSourceNode | null;
+  audioContext: AudioContext | null;
+  analyser: AnalyserNode | null;
 }
 
 export default function AudioProvider({
@@ -30,6 +38,10 @@ export default function AudioProvider({
   currentAudioRef,
   audioRef1,
   audioRef2,
+  source1,
+  source2,
+  audioContext,
+  analyser,
 }: AudioProviderProps) {
   return (
     <AudioContext.Provider
@@ -37,6 +49,10 @@ export default function AudioProvider({
         currentAudioRef,
         audioRef1,
         audioRef2,
+        source1,
+        source2,
+        audioContext,
+        analyser,
       }}
     >
       {children}
