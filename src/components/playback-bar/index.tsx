@@ -20,11 +20,9 @@ export default function PlaybackBar() {
         <PlaybackVisualizer />
       </div>
       <footer
-        className={`$${
-          currentSong
-            ? 'bg-background fixed bottom-0 z-50 w-full px-1 py-2 sm:px-2 md:py-3 lg:px-0'
-            : 'hidden'
-        }`}
+        className={`${
+          currentSong ? 'fixed bottom-0 z-50 w-full px-1 py-2 sm:px-2 md:py-3 lg:px-0' : 'hidden'
+        } bg-background`}
       >
         <div className="mx-auto flex max-w-7xl flex-col items-center gap-2 sm:px-2 md:grid md:grid-cols-3 md:items-center md:gap-0 md:px-4 lg:px-8">
           {/* Top row for mobile: Song Info + Right Controls */}
