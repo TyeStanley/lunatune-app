@@ -19,7 +19,7 @@ export default function DashboardOption({ icon: Icon, text, href, onClick }: Das
         <Icon size={28} className="text-primary sm:h-8 sm:w-8 lg:h-10 lg:w-10" />
       </div>
       <div className="text-center">
-        <p className="group-hover:text-primary text-base font-medium text-gray-200 sm:text-lg lg:text-xl">
+        <p className="group-hover:text-primary text-base font-medium whitespace-nowrap text-gray-200 sm:text-lg lg:text-xl">
           {text}
         </p>
       </div>

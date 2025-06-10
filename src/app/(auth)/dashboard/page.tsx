@@ -114,7 +114,7 @@ export default function Dashboard() {
           Quick Access
         </h2>
         <div className="bg-background-lighter/20 rounded-lg border border-white/5 p-6 backdrop-blur-md">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {dashboardOptions.map((option) => (
               <DashboardOption
                 key={option.text}
