@@ -16,7 +16,7 @@ export default function QueuePopup({ isOpen }: QueuePopupProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="absolute right-0 bottom-full w-96">
+    <div className="absolute right-0 bottom-full w-full max-w-xs sm:max-w-sm md:w-96">
       <div className="bg-background-lighter/20 rounded-tl-lg border border-white/5 p-4 backdrop-blur-md">
         {/* Tabs */}
         <div className="mb-4 flex gap-4 border-b border-white/5">
