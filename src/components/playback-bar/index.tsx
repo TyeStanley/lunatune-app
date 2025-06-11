@@ -7,18 +7,22 @@ import QueuePopup from './QueuePopup';
 import { Moon, ListMusic } from 'lucide-react';
 import { useState } from 'react';
 import PlaybackVisualizer from './PlaybackVisualizer';
+import { usePathname } from 'next/navigation';
 
 export default function PlaybackBar() {
   const { currentSong } = useAppSelector((state) => state.queue);
   const [isQueueOpen, setIsQueueOpen] = useState(false);
+  const pathname = usePathname();
 
   if (!currentSong) return null;
 
   return (
     <>
-      <div className="fixed bottom-[136px] left-0 z-50 w-full md:bottom-[84px]">
-        <PlaybackVisualizer />
-      </div>
+      {pathname !== '/visualizer' && (
+        <div className="fixed bottom-[136px] left-0 z-50 w-full md:bottom-[84px]">
+          <PlaybackVisualizer />
+        </div>
+      )}
       <footer
         className={`${
           currentSong ? 'fixed bottom-0 z-50 w-full px-1 py-2 sm:px-2 md:py-3 lg:px-0' : 'hidden'
