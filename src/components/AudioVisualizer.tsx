@@ -276,7 +276,7 @@ export default function AudioVisualizer() {
         if (nebula.y < -nebula.radius) nebula.y = canvas.height + nebula.radius;
         if (nebula.y > canvas.height + nebula.radius) nebula.y = -nebula.radius;
         if (nebula.alpha < 0.05) nebula.alpha = 0.05;
-        if (nebula.alpha > 0.12) nebula.alpha = 0.12;
+        if (nebula.alpha > 0.07) nebula.alpha = 0.07;
         // Interpolate color
         nebula.color = lerpColor(nebula.color, nebula.targetColor, 0.01);
         // Draw
@@ -401,47 +401,45 @@ export default function AudioVisualizer() {
       drawRing(radius * 1.8, 1.5, 0.4, -0.7); // Middle ring
       drawRing(radius * 1.4, 1, 0.5, 0.3); // Inner ring
 
-      // Draw black hole effect
-      const blackHoleRadius = radius * 0.8 * (1 + avgVolume * 0.18);
-      const blackHoleGlow = 20 + avgVolume * 60;
+      // Draw black hole effect (static, not audio reactive)
       const gradient = ctx.createRadialGradient(
         centerX,
         centerY,
         0,
         centerX,
         centerY,
-        blackHoleRadius,
+        radius * 0.8,
       );
       gradient.addColorStop(0, 'rgba(0, 0, 0, 1)');
       gradient.addColorStop(0.4, 'rgba(20, 20, 40, 0.8)');
       gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-
+      ctx.save();
       ctx.beginPath();
-      ctx.arc(centerX, centerY, blackHoleRadius, 0, Math.PI * 2);
-      ctx.shadowColor = 'rgba(80,80,120,0.7)';
-      ctx.shadowBlur = blackHoleGlow;
+      ctx.arc(centerX, centerY, radius * 0.8, 0, Math.PI * 2);
       ctx.fillStyle = gradient;
+      ctx.shadowColor = 'rgba(80,80,120,0.7)';
+      ctx.shadowBlur = 20;
       ctx.fill();
+      ctx.restore();
 
-      // Draw accretion disk
-      const diskRadius = radius * 1.2 * (1 + avgVolume * 0.12);
+      // Draw accretion disk (static, not audio reactive)
       const diskGradient = ctx.createRadialGradient(
         centerX,
         centerY,
-        blackHoleRadius,
+        radius * 0.8,
         centerX,
         centerY,
-        diskRadius,
+        radius * 1.2,
       );
-      const diskAlpha = 0.2 + avgVolume * 0.25;
       diskGradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
-      diskGradient.addColorStop(0.5, `rgba(255, 255, 255, ${diskAlpha})`);
+      diskGradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.2)');
       diskGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-
+      ctx.save();
       ctx.beginPath();
-      ctx.arc(centerX, centerY, diskRadius, 0, Math.PI * 2);
+      ctx.arc(centerX, centerY, radius * 1.2, 0, Math.PI * 2);
       ctx.fillStyle = diskGradient;
       ctx.fill();
+      ctx.restore();
 
       // Use raw frequency data for each bar, no normalization or mapping
       const barValues: number[] = [];
