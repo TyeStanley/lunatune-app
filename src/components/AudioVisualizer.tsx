@@ -12,6 +12,7 @@ interface Star {
   baseOpacity: number;
   twinkleSpeed: number;
   twinklePhase: number;
+  color: string;
 }
 
 // Nebula and Shooting Star types
@@ -82,6 +83,18 @@ export default function AudioVisualizer() {
       const starCount = Math.floor((window.innerWidth * window.innerHeight) / 1800); // density
       const newStars: Star[] = [];
       for (let i = 0; i < starCount; i++) {
+        // More balanced star color distribution
+        let color: string;
+        const r = Math.random();
+        if (r < 0.3)
+          color = '#ffb9b9'; // Red
+        else if (r < 0.5)
+          color = '#ffcc99'; // Orange
+        else if (r < 0.7)
+          color = '#fff4b9'; // Yellow
+        else if (r < 0.9)
+          color = '#ffffff'; // White
+        else color = '#b9dfff'; // Blue-white
         const orbitRadius = Math.random() * maxOrbit * 0.98 + 20;
         const orbitAngle = Math.random() * Math.PI * 2;
         const orbitSpeed = (Math.random() - 0.5) * 0.0007 - 0.0002; // -0.0002 to 0.0005 radians/frame
@@ -97,6 +110,7 @@ export default function AudioVisualizer() {
           baseOpacity: Math.random() * 0.5 + 0.3,
           twinkleSpeed: Math.random() * 0.7 + 0.2, // 0.2 to 0.9
           twinklePhase: Math.random() * Math.PI * 2,
+          color,
         });
       }
       setStars(newStars);
@@ -344,13 +358,18 @@ export default function AudioVisualizer() {
         const twinkleSpeed = star.twinkleSpeed * (1 + avgVolume * 2.5);
         const twinkle = Math.sin(now * twinkleSpeed + star.twinklePhase) * 0.35 + 0.65; // 0.3 to 1
         const opacity = star.baseOpacity * twinkle * (0.7 + avgVolume * 0.7); // gets brighter with audio
+        // Parallax offset (stars: less than nebula)
+        const px = star.x;
+        const py = star.y;
         ctx.save();
         ctx.beginPath();
-        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${opacity})`;
-        ctx.shadowColor = '#fff';
+        ctx.arc(px, py, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = star.color;
+        ctx.shadowColor = star.color;
+        ctx.globalAlpha = opacity;
         ctx.shadowBlur = 6 * star.radius;
         ctx.fill();
+        ctx.globalAlpha = 1;
         ctx.restore();
       }
 
