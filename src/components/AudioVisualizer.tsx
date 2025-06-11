@@ -387,16 +387,11 @@ export default function AudioVisualizer() {
       rotationRef.current += 0.002;
       ringRotationRef.current += 0.001;
 
-      // Draw outer rings
-      const drawRing = (
-        ringRadius: number,
-        thickness: number,
-        opacity: number,
-        rotationSpeed: number,
-      ) => {
+      // Draw multiple rings with different properties (static, not animated)
+      const drawStaticRing = (ringRadius: number, thickness: number, opacity: number) => {
         ctx.save();
         ctx.translate(centerX, centerY);
-        ctx.rotate(ringRotationRef.current * rotationSpeed);
+        // No rotation
         // Audio-reactive thickness and glow
         const dynamicThickness = thickness + avgVolume * 6;
         const dynamicOpacity = Math.min(opacity + avgVolume * 0.7, 1);
@@ -415,50 +410,10 @@ export default function AudioVisualizer() {
         ctx.restore();
       };
 
-      // Draw multiple rings with different properties
-      drawRing(radius * 2.2, 2, 0.3, 0.5); // Outer ring
-      drawRing(radius * 1.8, 1.5, 0.4, -0.7); // Middle ring
-      drawRing(radius * 1.4, 1, 0.5, 0.3); // Inner ring
-
-      // Draw black hole effect (static, not audio reactive)
-      const gradient = ctx.createRadialGradient(
-        centerX,
-        centerY,
-        0,
-        centerX,
-        centerY,
-        radius * 0.8,
-      );
-      gradient.addColorStop(0, 'rgba(0, 0, 0, 1)');
-      gradient.addColorStop(0.4, 'rgba(20, 20, 40, 0.8)');
-      gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, radius * 0.8, 0, Math.PI * 2);
-      ctx.fillStyle = gradient;
-      ctx.shadowColor = 'rgba(80,80,120,0.7)';
-      ctx.shadowBlur = 20;
-      ctx.fill();
-      ctx.restore();
-
-      // Draw accretion disk (static, not audio reactive)
-      const diskGradient = ctx.createRadialGradient(
-        centerX,
-        centerY,
-        radius * 0.8,
-        centerX,
-        centerY,
-        radius * 1.2,
-      );
-      diskGradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
-      diskGradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.2)');
-      diskGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, radius * 1.2, 0, Math.PI * 2);
-      ctx.fillStyle = diskGradient;
-      ctx.fill();
-      ctx.restore();
+      // Draw static golden rings
+      drawStaticRing(radius * 2.2, 2, 0.3); // Outer ring
+      drawStaticRing(radius * 1.8, 1.5, 0.4); // Middle ring
+      drawStaticRing(radius * 1.4, 1, 0.5); // Inner ring
 
       // Use raw frequency data for each bar, no normalization or mapping
       const barValues: number[] = [];
