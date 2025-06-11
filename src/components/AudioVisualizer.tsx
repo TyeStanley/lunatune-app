@@ -99,9 +99,8 @@ export default function AudioVisualizer() {
         ctx.stroke();
         ctx.restore();
         // Dot with glow, offset is proportional to bar length
-        const minOffset = 0;
         const maxOffset = 20;
-        const offset = minOffset + (maxOffset - minOffset) * (barLength / barMaxLength);
+        const offset = barLength === 0 ? 0 : maxOffset;
         const targetDist = radius + barLength + offset;
         const prevDist = dotDistancesRef.current![i];
         const newDist = lerp(prevDist, targetDist, 0.05);
