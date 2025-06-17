@@ -163,6 +163,7 @@ export default function AudioVisualizer() {
     generateNebulae();
     window.addEventListener('resize', generateNebulae);
     return () => window.removeEventListener('resize', generateNebulae);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Every 10s, assign a new random targetColor to each nebula
@@ -177,6 +178,7 @@ export default function AudioVisualizer() {
       );
     }, 10000);
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nebulae.length]);
 
   // Shooting star spawner
@@ -273,76 +275,6 @@ export default function AudioVisualizer() {
       animationRef.current = requestAnimationFrame(draw);
       analyser.getByteFrequencyData(dataArray);
 
-      // Fade previous frame with a darker background
-      ctx.globalAlpha = 0.3;
-      ctx.fillStyle = 'black';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.globalAlpha = 1;
-
-      // Draw nebulae
-      for (const nebula of nebulae) {
-        // Animate
-        nebula.x += nebula.dx;
-        nebula.y += nebula.dy;
-        nebula.alpha += nebula.dAlpha;
-        if (nebula.x < -nebula.radius) nebula.x = canvas.width + nebula.radius;
-        if (nebula.x > canvas.width + nebula.radius) nebula.x = -nebula.radius;
-        if (nebula.y < -nebula.radius) nebula.y = canvas.height + nebula.radius;
-        if (nebula.y > canvas.height + nebula.radius) nebula.y = -nebula.radius;
-        if (nebula.alpha < 0.05) nebula.alpha = 0.05;
-        if (nebula.alpha > 0.07) nebula.alpha = 0.07;
-        // Interpolate color
-        nebula.color = lerpColor(nebula.color, nebula.targetColor, 0.01);
-        // Draw
-        const grad = ctx.createRadialGradient(
-          nebula.x,
-          nebula.y,
-          0,
-          nebula.x,
-          nebula.y,
-          nebula.radius,
-        );
-        grad.addColorStop(0, nebula.color.replace('1)', `${nebula.alpha})`));
-        grad.addColorStop(1, nebula.color.replace('1)', '0)'));
-        ctx.save();
-        ctx.globalAlpha = 1;
-        ctx.beginPath();
-        ctx.arc(nebula.x, nebula.y, nebula.radius, 0, Math.PI * 2);
-        ctx.fillStyle = grad;
-        ctx.fill();
-        ctx.restore();
-      }
-
-      // Draw and animate shooting stars
-      shootingStarsRef.current = shootingStarsRef.current
-        .map((star) => {
-          star.x += star.dx;
-          star.y += star.dy;
-          star.life += 1;
-          star.alpha *= 0.97;
-          // Draw
-          ctx.save();
-          ctx.globalAlpha = star.alpha;
-          ctx.strokeStyle = 'white';
-          ctx.shadowColor = 'white';
-          ctx.shadowBlur = 12;
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.moveTo(star.x, star.y);
-          ctx.lineTo(star.x - star.dx * (star.length / 20), star.y - star.dy * (star.length / 20));
-          ctx.stroke();
-          ctx.restore();
-          return star;
-        })
-        .filter(
-          (star) =>
-            star.x >= -star.length &&
-            star.x <= canvas.width + star.length &&
-            star.y >= -star.length &&
-            star.y <= canvas.height + star.length &&
-            star.alpha > 0.05,
-        );
-
       // Calculate average volume (energy)
       let avgVolume = 0;
       for (let i = 0; i < bufferLength; i++) {
@@ -351,35 +283,112 @@ export default function AudioVisualizer() {
       avgVolume = avgVolume / bufferLength / 255;
       avgVolumeRef.current = avgVolume;
 
-      // Draw background stars (twinkling, audio reactive)
-      const now = performance.now() / 1000;
-      for (const star of stars) {
-        // Audio-reactive twinkle speed and brightness
-        const twinkleSpeed = star.twinkleSpeed * (1 + avgVolume * 2.5);
-        const twinkle = Math.sin(now * twinkleSpeed + star.twinklePhase) * 0.35 + 0.65; // 0.3 to 1
-        const opacity = star.baseOpacity * twinkle * (0.7 + avgVolume * 0.7); // gets brighter with audio
-        // Parallax offset (stars: less than nebula)
-        const px = star.x;
-        const py = star.y;
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(px, py, star.radius, 0, Math.PI * 2);
-        ctx.fillStyle = star.color;
-        ctx.shadowColor = star.color;
-        ctx.globalAlpha = opacity;
-        ctx.shadowBlur = 6 * star.radius;
-        ctx.fill();
-        ctx.globalAlpha = 1;
-        ctx.restore();
-      }
-
-      // Move stars in orbit
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2;
-      for (const star of stars) {
-        star.orbitAngle += star.orbitSpeed;
-        star.x = centerX + Math.cos(star.orbitAngle) * star.orbitRadius;
-        star.y = centerY + Math.sin(star.orbitAngle) * star.orbitRadius;
+
+      // Fade previous frame with a darker background
+      ctx.globalAlpha = 0.3;
+      ctx.fillStyle = 'black';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.globalAlpha = 1;
+
+      // Only draw these elements if not on mobile
+      if (minDim >= 900) {
+        // Draw nebulae
+        for (const nebula of nebulae) {
+          // Animate
+          nebula.x += nebula.dx;
+          nebula.y += nebula.dy;
+          nebula.alpha += nebula.dAlpha;
+          if (nebula.x < -nebula.radius) nebula.x = canvas.width + nebula.radius;
+          if (nebula.x > canvas.width + nebula.radius) nebula.x = -nebula.radius;
+          if (nebula.y < -nebula.radius) nebula.y = canvas.height + nebula.radius;
+          if (nebula.y > canvas.height + nebula.radius) nebula.y = -nebula.radius;
+          if (nebula.alpha < 0.05) nebula.alpha = 0.05;
+          if (nebula.alpha > 0.07) nebula.alpha = 0.07;
+          // Interpolate color
+          nebula.color = lerpColor(nebula.color, nebula.targetColor, 0.01);
+          // Draw
+          const grad = ctx.createRadialGradient(
+            nebula.x,
+            nebula.y,
+            0,
+            nebula.x,
+            nebula.y,
+            nebula.radius,
+          );
+          grad.addColorStop(0, nebula.color.replace('1)', `${nebula.alpha})`));
+          grad.addColorStop(1, nebula.color.replace('1)', '0)'));
+          ctx.save();
+          ctx.globalAlpha = 1;
+          ctx.beginPath();
+          ctx.arc(nebula.x, nebula.y, nebula.radius, 0, Math.PI * 2);
+          ctx.fillStyle = grad;
+          ctx.fill();
+          ctx.restore();
+        }
+
+        // Draw and animate shooting stars
+        shootingStarsRef.current = shootingStarsRef.current
+          .map((star) => {
+            star.x += star.dx;
+            star.y += star.dy;
+            star.life += 1;
+            star.alpha *= 0.97;
+            // Draw
+            ctx.save();
+            ctx.globalAlpha = star.alpha;
+            ctx.strokeStyle = 'white';
+            ctx.shadowColor = 'white';
+            ctx.shadowBlur = 12;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(star.x, star.y);
+            ctx.lineTo(
+              star.x - star.dx * (star.length / 20),
+              star.y - star.dy * (star.length / 20),
+            );
+            ctx.stroke();
+            ctx.restore();
+            return star;
+          })
+          .filter(
+            (star) =>
+              star.x >= -star.length &&
+              star.x <= canvas.width + star.length &&
+              star.y >= -star.length &&
+              star.y <= canvas.height + star.length &&
+              star.alpha > 0.05,
+          );
+
+        // Draw background stars (twinkling, audio reactive)
+        const now = performance.now() / 1000;
+        for (const star of stars) {
+          // Audio-reactive twinkle speed and brightness
+          const twinkleSpeed = star.twinkleSpeed * (1 + avgVolume * 2.5);
+          const twinkle = Math.sin(now * twinkleSpeed + star.twinklePhase) * 0.35 + 0.65; // 0.3 to 1
+          const opacity = star.baseOpacity * twinkle * (0.7 + avgVolume * 0.7); // gets brighter with audio
+          // Parallax offset (stars: less than nebula)
+          const px = star.x;
+          const py = star.y;
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(px, py, star.radius, 0, Math.PI * 2);
+          ctx.fillStyle = star.color;
+          ctx.shadowColor = star.color;
+          ctx.globalAlpha = opacity;
+          ctx.shadowBlur = 6 * star.radius;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+          ctx.restore();
+        }
+
+        // Move stars in orbit
+        for (const star of stars) {
+          star.orbitAngle += star.orbitSpeed;
+          star.x = centerX + Math.cos(star.orbitAngle) * star.orbitRadius;
+          star.y = centerY + Math.sin(star.orbitAngle) * star.orbitRadius;
+        }
       }
 
       // Update pulse and rotation
