@@ -4,7 +4,8 @@ import { useAppSelector } from '@/redux/hooks';
 import PlayerControls from './PlayerControls';
 import VolumeControl from './VolumeControl';
 import QueuePopup from './QueuePopup';
-import { Moon, ListMusic } from 'lucide-react';
+import { Moon, ListMusic, AudioWaveformIcon } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 import PlaybackVisualizer from './PlaybackVisualizer';
 import { usePathname } from 'next/navigation';
@@ -45,6 +46,12 @@ export default function PlaybackBar() {
             </div>
             {/* Right: Queue Button and Volume Control (mobile only, hidden on md+) */}
             <section className="flex items-center gap-2 md:hidden">
+              <Link
+                href="/visualizer"
+                className="hover:text-primary cursor-pointer text-gray-400 transition-colors"
+              >
+                <AudioWaveformIcon className="size-4" />
+              </Link>
               <button
                 onClick={() => setIsQueueOpen(!isQueueOpen)}
                 className={`hover:text-primary cursor-pointer text-gray-400 transition-colors $${
@@ -67,6 +74,12 @@ export default function PlaybackBar() {
 
           {/* Right: Queue Button and Volume Control (md+ only) */}
           <section className="hidden w-[30%] items-center justify-end gap-2 md:col-span-1 md:flex md:justify-self-end">
+            <Link
+              href="/visualizer"
+              className="hover:text-primary cursor-pointer text-gray-400 transition-colors"
+            >
+              <AudioWaveformIcon className="size-4" />
+            </Link>
             <button
               onClick={() => setIsQueueOpen(!isQueueOpen)}
               className="hover:text-primary cursor-pointer text-gray-400 transition-colors"
