@@ -490,6 +490,7 @@ export default function AudioVisualizer() {
       width={window.innerWidth}
       height={window.innerHeight}
       className="fixed inset-0 h-full w-full"
+      data-testid="visualizer-canvas"
     />
   );
 }
