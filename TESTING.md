@@ -120,7 +120,6 @@ Thanks to `@testing-library/jest-dom`, you have access to custom matchers:
 The setup includes mocks for:
 
 - Next.js router (`next/router` and `next/navigation`)
-- Tauri API (`@tauri-apps/api`)
 
 Add additional mocks in `jest.setup.js` as needed.
 
