@@ -1,3 +1,4 @@
+import 'whatwg-fetch';
 require('@testing-library/jest-dom');
 
 // Mock Next.js router
