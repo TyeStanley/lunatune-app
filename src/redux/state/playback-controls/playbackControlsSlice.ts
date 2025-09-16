@@ -94,3 +94,5 @@ export const {
 } = playbackControlsSlice.actions;
 
 export default playbackControlsSlice.reducer;
+
+export type { PlaybackControlsState };

@@ -70,7 +70,11 @@ export default function SleepTimerModal({ isOpen, onClose }: SleepTimerModalProp
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center">
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+        data-testid="backdrop"
+      />
       <div className="relative z-40 w-full max-w-md">
         <div className="bg-background-lighter/20 rounded-xl border border-white/5 p-6 backdrop-blur-md">
           <div className="mb-4 flex items-center justify-between">
@@ -81,6 +85,7 @@ export default function SleepTimerModal({ isOpen, onClose }: SleepTimerModalProp
             <button
               onClick={onClose}
               className="rounded-full p-1 text-gray-400 hover:bg-white/5 hover:text-gray-200"
+              aria-label="close"
             >
               <X size={20} />
             </button>

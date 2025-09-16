@@ -82,6 +82,7 @@ export default function Slider({
         ref={progressBarRef}
         onMouseDown={handleMouseDown}
         className="bg-background-lighter group relative h-1 w-full cursor-pointer rounded-full"
+        data-testid="progress-bar"
       >
         <div
           className="group-hover:bg-primary absolute top-0 left-0 h-1 rounded-full bg-gray-200 transition-colors"
